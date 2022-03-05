@@ -1,1 +1,4 @@
-FIXME: Who are you?
+Alexandre Gautier <alexandre.gautier@epita.fr>
+Tristan Denis <tristan.denis@epita.fr>
+Noé Mathieu <noe.mathieu@epita.fr>
+Mathis Guilbaud <mathis.guilbaud@epita.fr>
