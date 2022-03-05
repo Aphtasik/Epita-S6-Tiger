@@ -25,6 +25,7 @@
 #include <parse/parsetiger.hh>
 #include <parse/tiger-parser.hh>
 
+
   // FIXME: Some code was deleted here.
 
 // Convenient shortcuts.
@@ -54,10 +55,15 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
+SPACE           [\t ] /* tab or space */
+ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
+STRING          \"[.]*\"
+
   /* FIXME: Some code was deleted here. */
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
+    int nbcomments = 0;
 
   // Each time yylex is called.
   tp.location_.step();
@@ -66,11 +72,99 @@ int             [0-9]+
  /* The rules.  */
 
 {int}         {
-                int val = 0;
-  // FIXME: Some code was deleted here (Decode, and check the value).
-                return TOKEN_VAL(INT, val);
+    int val = 0;
+    val = strtoul(yytext, nullptr, 10);
+    if (errno == ERANGE)
+    {
+        tp.error_ << misc::error::scan
+        << tp.location_
+        << ": invalid identifier: `"
+        << misc::escape(yytext) << "'\n";
+    }
+    else
+        return TOKEN_VAL(INT, val);
+    // FIXME: Some code was deleted here (Decode, and check the value).
               }
+"\n"        {EM_newline();} /* BUG: may crash */
+{SPACE}     {
+    tp.location_.step();
+    continue;
+            }
 
+"/*"        {
+    nbcomments = 1;
+    BEGIN(SECTION_COMMENT);
+            }
+
+SECTION_COMMENT {
+"*/"        {
+    nbcomments--;
+    if (nbcomments == 0)
+    {
+        BEGIN(INITIAL)
+    }
+"/*"        {nbcomments++;}
+.           {}
+/* TODO; handle EOF ? */
+}
+            }
+
+","	        { return TOKEN(COMMA); }
+":"	        { return TOKEN(COLON); }
+";"	        { return TOKEN(SEMICOLON); }
+"("	        { return TOKEN(LPAREN); }
+")"	        { return TOKEN(RPAREN); }
+"["	        { return TOKEN(LBRACK); }
+"]"	        { return TOKEN(RBRACK); }
+"{"	        { return TOKEN(LBRACE); }
+"}"	        { return TOKEN(RBRACE); }
+"."	        { return TOKEN(DOT); }
+
+"+"	        { return TOKEN(PLUS); }
+"-"	        { return TOKEN(MINUS); }
+"*"	        { return TOKEN(TIMES); }
+"/"	        { return TOKEN(DIVIDE); }
+
+"="	        { return TOKEN(EQ); }
+"<>"	    { return TOKEN(NEQ); }
+"<"	        { return TOKEN(LT); }
+"<="	    { return TOKEN(LE); }
+">"	        { return TOKEN(GT); }
+">="	    { return TOKEN(GE); }
+"&"	        { return TOKEN(AND); }
+"|"	        { return TOKEN(OR); }
+":="	    { return TOKEN(ASSIGN); }
+
+
+"array"       { return TOKEN(ARRAY); }
+"if"          { return TOKEN(IF); }
+"then"        { return TOKEN(THEN); }
+"else"        { return TOKEN(ELSE); }
+"while"       { return TOKEN(WHILE); }
+"for"  	    { return TOKEN(FOR); }
+"to"  	    { return TOKEN(TO); }
+"do"  	    { return TOKEN(DO); }
+"let"  	    { return TOKEN(LET); }
+"in"  	    { return TOKEN(IN); }
+"end"  	    { return TOKEN(END); }
+"of"  	    { return TOKEN(OF); }
+"break"  	    { return TOKEN(BREAK); }
+"nil"  	    { return TOKEN(NIL); }
+"function"    { return TOKEN(FUNCTION); }
+"var"         { return TOKEN(VAR); }
+"type"        { return TOKEN(TYPE); }
+"import"      { return TOKEN(IMPORT); }
+"primitive"   { return TOKEN(PRIMITIVE); }
+
+{ID}        {
+    misc::symbol symbol(yytext);
+    return TOKEN_VAL(ID, symbol);
+            }
+
+{STRING}    {
+    return TOKEN_VAL(STRING, yytext);
+    /* FIXME: Contain first and last quote, must be removed */
+            }
   /* FIXME: Some code was deleted here. */
 %%
 
