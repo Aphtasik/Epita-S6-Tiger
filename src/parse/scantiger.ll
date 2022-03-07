@@ -26,7 +26,8 @@
 #include <parse/tiger-parser.hh>
 
 
-  // FIXME: Some code was deleted here.
+    // FIXME: Some code was deleted here.
+    std::string dynamic_string;
 
 // Convenient shortcuts.
 #define TOKEN_VAL(Type, Value)                  \
@@ -55,14 +56,14 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
-SPACE           [\t ] /* tab or space */
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
+EOL             (\n\r|\r\n|\n|\r)
 
   /* FIXME: Some code was deleted here. */
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
-    int nbcomments = 0;
+    uint nbcomments = 0;
 
   // Each time yylex is called.
   tp.location_.step();
@@ -75,13 +76,63 @@ ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)
     val = strtoul(yytext, nullptr, 10);
     if (errno == ERANGE)
     {
-        tp.error_ << ": invalid identifier: `"
-        << misc::escape(yytext) << "'\n";
+      tp.error_ << misc::error::error_type::scan        \
+                << tp.location_                         \
+                << ": invalid identifier: `"            \
+                << misc::escape(yytext) << "'\n";       \
     }
     else
         return TOKEN_VAL(INT, val);
     // FIXME: Some code was deleted here (Decode, and check the value).
               }
+
+"/*"            {
+    nbcomments = 1;
+    BEGIN(SC_COMMENT);
+                }
+
+<SC_COMMENT>{
+<<eof>>         {
+      tp.error_ << misc::error::error_type::scan        \
+                << tp.location_                         \
+                << ": invalid identifier: `"            \
+                << misc::escape(yytext) << "'\n";       \
+                BEGIN(INITIAL);
+                }
+"/*"            { nbcomments++; }
+"*/"            {
+    nbcomments--;
+    if (nbcomments == 0)
+        BEGIN(INITIAL);
+                }
+.               {}
+}
+
+
+"\""            {
+        dynamic_string.clear();
+        BEGIN(SC_STRING);
+                }
+<SC_STRING>{
+<<eof>>         {
+        tp.error_ << misc::error::error_type::scan        \
+                << tp.location_                         \
+                << ": invalid identifier: `"            \
+                << misc::escape(yytext) << "'\n";       \
+                BEGIN(INITIAL);
+                }
+"\\\""          {
+        dynamic_string += yytext;
+                }
+"\""            {
+        BEGIN(INITIAL);
+        return TOKEN_VAL(STRING, dynamic_string);
+                }
+.               {
+        dynamic_string += yytext;
+                }
+}
+
 
 ","	        { return TOKEN(COMMA); }
 ":"	        { return TOKEN(COLON); }
@@ -134,6 +185,8 @@ ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)
     misc::symbol symbol(yytext);
     return TOKEN_VAL(ID, symbol);
             }
+
+<<eof>>     { return TOKEN(EOF); }
 %%
 
 // Do not use %option noyywrap, because then flex generates the same
