@@ -1,0 +1,5 @@
+let
+    var myvar := "My printed variable\n"
+in
+    print(myvar)
+end
