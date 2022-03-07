@@ -70,22 +70,6 @@ EOL             (\n\r|\r\n|\n|\r)
 %}
 
  /* The rules.  */
-
-{int}         {
-    int val = 0;
-    val = strtoul(yytext, nullptr, 10);
-    if (errno == ERANGE)
-    {
-      tp.error_ << misc::error::error_type::scan        \
-                << tp.location_                         \
-                << ": invalid identifier: `"            \
-                << misc::escape(yytext) << "'\n";       \
-    }
-    else
-        return TOKEN_VAL(INT, val);
-    // FIXME: Some code was deleted here (Decode, and check the value).
-              }
-
 "/*"            {
     nbcomments = 1;
     BEGIN(SC_COMMENT);
@@ -180,6 +164,26 @@ EOL             (\n\r|\r\n|\n|\r)
 "type"        { return TOKEN(TYPE); }
 "import"      { return TOKEN(IMPORT); }
 "primitive"   { return TOKEN(PRIMITIVE); }
+
+"class"         { return TOKEN(CLASS); }
+"extends"         { return TOKEN(EXTENDS); }
+"method"         { return TOKEN(METHOD); }
+"new"         { return TOKEN(NEW); }
+
+{int}         {
+    int val = 0;
+    val = strtoul(yytext, nullptr, 10);
+    if (errno == ERANGE)
+    {
+      tp.error_ << misc::error::error_type::scan        \
+                << tp.location_                         \
+                << ": invalid identifier: `"            \
+                << misc::escape(yytext) << "'\n";       \
+    }
+    else
+        return TOKEN_VAL(INT, val);
+    // FIXME: Some code was deleted here (Decode, and check the value).
+              }
 
 {ID}        {
     misc::symbol symbol(yytext);
