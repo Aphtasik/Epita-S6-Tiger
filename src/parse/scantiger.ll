@@ -57,7 +57,6 @@ YY_FLEX_NAMESPACE_BEGIN
 int             [0-9]+
 SPACE           [\t ] /* tab or space */
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
-STRING          \"[.]*\"
 
   /* FIXME: Some code was deleted here. */
 %%
@@ -76,42 +75,17 @@ STRING          \"[.]*\"
     val = strtoul(yytext, nullptr, 10);
     if (errno == ERANGE)
     {
-        tp.error_ << misc::error::scan
-        << tp.location_
-        << ": invalid identifier: `"
+        tp.error_ << ": invalid identifier: `"
         << misc::escape(yytext) << "'\n";
     }
     else
         return TOKEN_VAL(INT, val);
     // FIXME: Some code was deleted here (Decode, and check the value).
               }
-"\n"        {EM_newline();} /* BUG: may crash */
-{SPACE}     {
-    tp.location_.step();
-    continue;
-            }
-
-"/*"        {
-    nbcomments = 1;
-    BEGIN(SECTION_COMMENT);
-            }
-
-SECTION_COMMENT {
-"*/"        {
-    nbcomments--;
-    if (nbcomments == 0)
-    {
-        BEGIN(INITIAL)
-    }
-"/*"        {nbcomments++;}
-.           {}
-/* TODO; handle EOF ? */
-}
-            }
 
 ","	        { return TOKEN(COMMA); }
 ":"	        { return TOKEN(COLON); }
-";"	        { return TOKEN(SEMICOLON); }
+";"	        { return TOKEN(SEMI); }
 "("	        { return TOKEN(LPAREN); }
 ")"	        { return TOKEN(RPAREN); }
 "["	        { return TOKEN(LBRACK); }
@@ -126,7 +100,7 @@ SECTION_COMMENT {
 "/"	        { return TOKEN(DIVIDE); }
 
 "="	        { return TOKEN(EQ); }
-"<>"	    { return TOKEN(NEQ); }
+"<>"	    { return TOKEN(NE); }
 "<"	        { return TOKEN(LT); }
 "<="	    { return TOKEN(LE); }
 ">"	        { return TOKEN(GT); }
@@ -160,12 +134,6 @@ SECTION_COMMENT {
     misc::symbol symbol(yytext);
     return TOKEN_VAL(ID, symbol);
             }
-
-{STRING}    {
-    return TOKEN_VAL(STRING, yytext);
-    /* FIXME: Contain first and last quote, must be removed */
-            }
-  /* FIXME: Some code was deleted here. */
 %%
 
 // Do not use %option noyywrap, because then flex generates the same
