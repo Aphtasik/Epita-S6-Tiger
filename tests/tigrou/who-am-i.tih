@@ -1,0 +1,8 @@
+
+function who_am_i(value : int) =
+    if value <= 2 then
+        print("TIGROS\n")
+    else if value <= 5 then
+        print("TIGROU\n")
+        else
+            print("TIGER\n")

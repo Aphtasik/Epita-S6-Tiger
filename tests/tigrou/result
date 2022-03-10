@@ -1,0 +1,5 @@
+who-am-i.tig:2.3-25: ./who-am-i.tih: file not found.
+who-am-i.tig:5.3-13: undeclared function: who_am_i
+who-am-i.tig:9.3-13: undeclared function: who_am_i
+who-am-i.tig:13.3-13: undeclared function: who_am_i
+who-am-i.tig:17.3-14: undeclared function: who_am_i

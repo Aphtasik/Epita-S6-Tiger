@@ -250,7 +250,6 @@ AX_CONFIG_SCRIPTS([tcsh/run])
 # Students should create their test suite in tests/.  Add the needed
 # configure options here.
 AC_CONFIG_FILES([tests/Makefile])
-
 ## --------------- ##
 ## Configuration.  ##
 ## --------------- ##
