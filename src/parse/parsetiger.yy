@@ -15,6 +15,8 @@
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
   // FIXME: Some code was deleted here (Other directives).
+%expect 1
+%expect-rr 0
 
 %define parse.error verbose
 %defines
@@ -164,6 +166,17 @@
 
   // FIXME: Some code was deleted here (Priorities/associativities).
 
+  %precedence THEN
+  %precedence ELSE
+  %precedence DO
+  %precedence OF
+  %precedence ASSIGN
+  %left OR
+  %left AND
+  %left LE LT NE EQ GT GE
+  %left PLUS MINUS
+  %left TIMES DIVIDE
+
 // Solving conflicts on:
 // let type foo = bar
 //     type baz = bat
@@ -186,10 +199,86 @@ program:
    
 ;
 
+exps :
+%empty
+| rule1
+;
+
+rule1:
+ exp
+ | exp SEMI rule1
+ ;
+
+rule32:
+%empty
+| COMMA ID EQ exp rule32
+
+
+rule31:
+%empty
+| ID EQ exp rule32
+
+
 exp:
-  INT
-   
+  NIL
+  | INT
+  | STRING
+  | ID LBRACK exp RBRACK OF exp
+  | typeid LBRACE rule31 RBRACE
+
+  | lvalue
+
+  | ID LPAREN rule21 RPAREN
+
+  | MINUS exp
+  //| exp op exp
+
+  | exp PLUS exp
+  | exp MINUS exp
+  | exp TIMES exp
+  | exp DIVIDE exp
+  | exp EQ exp
+  | exp NE exp
+  | exp GT exp
+  | exp LT exp
+  | exp GE exp
+  | exp LE exp
+  | exp AND exp
+  | exp OR exp
+
+  | LPAREN exps RPAREN
+
+  | lvalue ASSIGN exp
+
+  | IF exp THEN exp
+  | IF exp THEN exp ELSE exp
+  | WHILE exp DO exp
+  | FOR ID ASSIGN exp TO exp DO exp
+  | BREAK
+  | LET chunks IN exps END
+  ;
   // FIXME: Some code was deleted here (More rules).
+
+rule21 :
+%empty
+  | rule22
+;
+
+rule22 :
+  exp
+  | exp COMMA rule22
+;
+
+lvalue:
+  ID
+  | lvalue DOT ID
+  | lvalue LBRACK exp RBRACK
+  ;
+
+/*%token OP "_op";
+op:
+  PLUS | MINUS | TIMES | DIVIDE | EQ | NE | GT | LT | GE | LE | AND | OR ;
+*/
 
 /*---------------.
 | Declarations.  |
@@ -207,13 +296,29 @@ chunks:
         end
      which is why we end the recursion with a %empty. */
   %empty                  
-| tychunk   chunks        
+| tychunk   chunks
+| vardec    chunks
+| fundec    chunks
+| IMPORT STRING
   // FIXME: Some code was deleted here (More rules).
 ;
 
 /*--------------------.
 | Type Declarations.  |
 `--------------------*/
+
+fundec:
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp
+| FUNCTION ID LPAREN tyfields RPAREN EQ exp
+| PRIMITIVE ID LPAREN tyfields RPAREN
+| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid
+;
+
+
+
+vardec:
+  VAR ID COLON typeid ASSIGN exp
+| VAR ID ASSIGN exp
 
 tychunk:
   /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
@@ -260,4 +365,6 @@ void
 parse::parser::error(const location_type& l, const std::string& m)
 {
   // FIXME: Some code was deleted here.
+  std::cerr << m << std::endl;
+  tp.error_ << 3 << l;
 }
