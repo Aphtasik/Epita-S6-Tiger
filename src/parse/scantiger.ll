@@ -113,10 +113,12 @@ BACKSLASH       \\[^\\abfnrtv]
         BEGIN(INITIAL);
         return TOKEN_VAL(STRING, dynamic_string);
                 }
-{BACKSLASH}          {
-        tp.error_ << misc::error::scan << tp.location_;
-        tp.error_ << ": invalid identifier: `" << misc::escape(yytext) << "'\n";
-        BEGIN(INITIAL);
+{BACKSLASH}     {
+      tp.error_ << misc::error::error_type::scan        \
+                << tp.location_                         \
+                << ": invalid identifier: `"            \
+                << misc::escape(yytext) << "'\n";       \
+                BEGIN(INITIAL);
                 }
 .               {
         dynamic_string += yytext;
