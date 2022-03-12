@@ -14,7 +14,7 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
-  // FIXME: Some code was deleted here (Other directives).
+  // FIXME: Some code was deleted here (Other directives). DONE
 %expect 1
 %expect-rr 0
 
@@ -164,7 +164,7 @@
        EOF 0        "end of file"
 
 
-  // FIXME: Some code was deleted here (Priorities/associativities).
+  // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
   %precedence THEN
   %precedence ELSE
@@ -257,7 +257,7 @@ exp:
   | BREAK
   | LET chunks IN exps END
   ;
-  // FIXME: Some code was deleted here (More rules).
+  // FIXME: Some code was deleted here (More rules). DONE
 
 rule21 :
 %empty
@@ -300,7 +300,7 @@ chunks:
 | vardec    chunks
 | fundec    chunks
 | IMPORT STRING
-  // FIXME: Some code was deleted here (More rules).
+  // FIXME: Some code was deleted here (More rules). DONE
 ;
 
 /*--------------------.
@@ -364,7 +364,7 @@ typeid:
 void
 parse::parser::error(const location_type& l, const std::string& m)
 {
-  // FIXME: Some code was deleted here.
-  std::cerr << m << std::endl;
-  tp.error_ << 3 << l;
+  // FIXME: Some code was deleted here. DONE
+
+  tp.error_ << misc::error::error_type::parse << l << ": " << m << "\n";
 }
