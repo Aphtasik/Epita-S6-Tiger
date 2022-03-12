@@ -56,8 +56,10 @@ YY_FLEX_NAMESPACE_BEGIN
 
 /* Abbreviations.  */
 int             [0-9]+
+SPACE           [ \t]
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
 EOL             (\n\r|\r\n|\n|\r)
+BACKSLASH       \\[^\\abfnrtv]
 
   /* FIXME: Some code was deleted here. */
 %%
@@ -79,10 +81,10 @@ EOL             (\n\r|\r\n|\n|\r)
 <<eof>>         {
       tp.error_ << misc::error::error_type::scan        \
                 << tp.location_                         \
-                << ": invalid identifier: `"            \
-                << misc::escape(yytext) << "'\n";       \
+                << ": unexpected end of file in a comment\n";            \
                 BEGIN(INITIAL);
                 }
+{EOL}           {}
 "/*"            { nbcomments++; }
 "*/"            {
     nbcomments--;
@@ -101,8 +103,7 @@ EOL             (\n\r|\r\n|\n|\r)
 <<eof>>         {
         tp.error_ << misc::error::error_type::scan        \
                 << tp.location_                         \
-                << ": invalid identifier: `"            \
-                << misc::escape(yytext) << "'\n";       \
+                << ": unexpected end of file in a string\n";            \
                 BEGIN(INITIAL);
                 }
 "\\\""          {
@@ -111,6 +112,11 @@ EOL             (\n\r|\r\n|\n|\r)
 "\""            {
         BEGIN(INITIAL);
         return TOKEN_VAL(STRING, dynamic_string);
+                }
+{BACKSLASH}          {
+        tp.error_ << misc::error::scan << tp.location_;
+        tp.error_ << ": invalid identifier: `" << misc::escape(yytext) << "'\n";
+        BEGIN(INITIAL);
                 }
 .               {
         dynamic_string += yytext;
@@ -170,7 +176,7 @@ EOL             (\n\r|\r\n|\n|\r)
 "method"         { return TOKEN(METHOD); }
 "new"         { return TOKEN(NEW); }
 
-{int}         {
+{int}       {
     int val = 0;
     val = strtoul(yytext, nullptr, 10);
     if (errno == ERANGE)
@@ -183,7 +189,13 @@ EOL             (\n\r|\r\n|\n|\r)
     else
         return TOKEN_VAL(INT, val);
     // FIXME: Some code was deleted here (Decode, and check the value).
-              }
+            }
+
+{SPACE}     {
+    tp.location_.step();
+    continue;
+            }
+{EOL}       { tp.location_.lines(yyleng); }
 
 {ID}        {
     misc::symbol symbol(yytext);
@@ -191,6 +203,12 @@ EOL             (\n\r|\r\n|\n|\r)
             }
 
 <<eof>>     { return TOKEN(EOF); }
+.           {
+    tp.error_ << misc::error::error_type::scan        \
+        << tp.location_                         \
+        << ": invalid identifier: `"            \
+        << misc::escape(yytext) << "'\n";       \
+            }
 %%
 
 // Do not use %option noyywrap, because then flex generates the same
