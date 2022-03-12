@@ -14,7 +14,7 @@
 
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
-  // FIXME: Some code was deleted here (Other directives).
+  // FIXME: Some code was deleted here (Other directives). DONE
 %expect 1
 %expect-rr 0
 
@@ -202,7 +202,7 @@
 %type <ast::fields_type*>     tyfields tyfields.1
   // FIXME: Some code was deleted here (More %types).
 
-  // FIXME: Some code was deleted here (Priorities/associativities).
+  // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
   %precedence THEN
   %precedence ELSE
@@ -297,7 +297,7 @@ exp:
   ;
 
   { $$ = tp.td_.make_IntExp(@$, $1); }
-  // FIXME: Some code was deleted here (More rules).
+  // FIXME: Some code was deleted here (More rules). 
 
 rule21 :
 %empty
@@ -408,7 +408,7 @@ typeid:
 void
 parse::parser::error(const location_type& l, const std::string& m)
 {
-  // FIXME: Some code was deleted here.
-  std::cerr << m << std::endl;
-  tp.error_ << 3 << l;
+  // FIXME: Some code was deleted here. DONE
+
+  tp.error_ << misc::error::error_type::parse << l << ": " << m << "\n";
 }
