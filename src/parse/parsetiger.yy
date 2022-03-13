@@ -258,11 +258,11 @@ rule31:
 
 
 exp:
-  NIL
-  | INT
-  | STRING
-  | ID LBRACK exp RBRACK OF exp
-  | typeid LBRACE rule31 RBRACE
+  NIL { $$ = tp.td_.make_NilExp(@$); }
+  | INT { $$ = tp.td_.make_IntExp(@$, $1); }
+  | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
+  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, $1, $3, $6); } //TODO: next time
+  | typeid LBRACE rule31 RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
   | lvalue
 
@@ -271,7 +271,7 @@ exp:
   | MINUS exp
   //| exp op exp
 
-  | exp PLUS exp
+  | exp PLUS exp 
   | exp MINUS exp
   | exp TIMES exp
   | exp DIVIDE exp
@@ -335,34 +335,44 @@ chunks:
             ..
         end
      which is why we end the recursion with a %empty. */
-  %empty                  
-| tychunk   chunks
-| vardec    chunks
-| fundec    chunks
-| IMPORT STRING
 
-  /* %empty                  { $$ = tp.td_.make_ChunkList(@$); } */
-/* | tychunk   chunks        { $$ = $2; $$->push_front($1); } */
-/* >>>>>>> 2024-tc-2.0 */
-  /* // FIXME: Some code was deleted here (More rules). */
-/* ; */
+  %empty                  { $$ = tp.td_.make_ChunkList(@$); }
+| tychunk   chunks        { $$ = $2; $$->push_front($1); }
+| varchunk  chunks        { $$ = $2; $$->push_front($1); }
+| funchunk  chunks        { $$ = $2; $$->push_front($1); }
+| IMPORT    STRING        { $$ = $2; $$->push_front($1); } //TODO: How to make chunk from import ?
+  // FIXME: Some code was deleted here (More rules).
+;
 
 /*--------------------.
 | Type Declarations.  |
 `--------------------*/
 
-fundec:
-  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp
-| FUNCTION ID LPAREN tyfields RPAREN EQ exp
-| PRIMITIVE ID LPAREN tyfields RPAREN
-| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid
+funchunk:
+  /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
+     shift-reduce conflict. */
+  fundec %prec CHUNKS  { $$ = tp.td_.make_FunctionChunk(@1); $$->push_front(*$1); }
+| fundec funchunk       { $$ = $2; $$->push_front(*$1); }
 ;
 
+fundec:
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $7, $9); }
+| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_VarDec(@$, $2, $4, tp.td_.make_NameTy(@2, $2), $7); }
+| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_VarDec(@$, $2, $4, tp.td_.make_NameTy(@2, $2), tp.td_.make_exps_type()); }
+| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_VarDec(@$, $2, $4, $7, tp.td_.make_exps_type()); }
+;
 
+varchunk:
+  /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
+     shift-reduce conflict. */
+  vardec %prec CHUNKS  { $$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1); }
+| vardec varchunk       { $$ = $2; $$->push_front(*$1); }
+;
 
 vardec:
-  VAR ID COLON typeid ASSIGN exp
-| VAR ID ASSIGN exp
+  VAR ID COLON typeid ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $6); }
+| VAR ID ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@2, $2), $6); } 
+;
 
 tychunk:
   /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
