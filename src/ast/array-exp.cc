@@ -9,7 +9,10 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  ArrayExp::ArrayExp(const Location& location, NameTy* arr_type, Exp* arr_length, Exp* arr_val)
+  ArrayExp::ArrayExp(const Location& location,
+                     NameTy* arr_type,
+                     Exp* arr_length,
+                     Exp* arr_val)
     : Exp(location)
     , arr_type_(arr_type)
     , arr_length_(arr_length)

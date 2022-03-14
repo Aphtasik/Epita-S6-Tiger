@@ -9,6 +9,7 @@
 
 namespace ast
 {
+  // FIXME: Some code was deleted here.
   inline const NameTy& ArrayExp::arr_type_get() const { return *arr_type_; }
   inline NameTy& ArrayExp::arr_type_get() { return *arr_type_; }
 

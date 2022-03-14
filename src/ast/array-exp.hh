@@ -18,7 +18,10 @@ namespace ast
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a ArrayExp node.
-    ArrayExp(const Location& location, NameTy* arr_type, Exp* arr_length, Exp* arr_val);
+    ArrayExp(const Location& location,
+             NameTy* arr_type,
+             Exp* arr_length,
+             Exp* arr_val);
     ArrayExp(const ArrayExp&) = delete;
     ArrayExp& operator=(const ArrayExp&) = delete;
     /// Destroy a ArrayExp node.
@@ -36,13 +39,17 @@ namespace ast
     /** \name Accessors.
      ** \{ */
     /// Return exit condition of the loop.
-    const Exp& test_get() const;
+    const NameTy& arr_type_get() const;
     /// Return exit condition of the loop.
-    Exp& test_get();
+    NameTy& arr_type_get();
+
+    const Exp& arr_length_get() const;
+    /// Return exit condition of the loop.
+    Exp& arr_length_get();
     /// Return instructions executed in the loop.
-    const Exp& body_get() const;
+    const Exp& arr_val_get() const;
     /// Return instructions executed in the loop.
-    Exp& body_get();
+    Exp& arr_val_get();
     /** \} */
 
   protected:

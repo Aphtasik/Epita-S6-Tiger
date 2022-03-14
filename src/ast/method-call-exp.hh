@@ -1,6 +1,6 @@
 /**
  ** \file ast/method-call-exp.hh
- ** \brief Declaration of ast::MethodCallExp.
+ ** \brief Declaration of ast::MethodMethodCallExp.
  */
 
 #pragma once
@@ -11,7 +11,7 @@
 
 namespace ast
 {
-  /** \class ast::MethodCallExp
+  /** \class ast::MethodMethodCallExp
    ** \brief Method call.
    **
    ** A method call is \em not a function call in the strict sense
@@ -19,9 +19,36 @@ namespace ast
    ** factoring tool here.
    */
 
-  class MethodCallExp : public CallExp
+  class MethodMethodCallExp : public CallExp
   {
     // FIXME: Some code was deleted here.
+  public:
+    /** \name Ctor & dtor.
+     ** \{ */
+    /// Construct a MethodCallExp node.
+    MethodCallExp(const Location& location, exps_type exps, Var* var);
+    MethodCallExp(const MethodCallExp&) = delete;
+    MethodCallExp& operator=(const MethodCallExp&) = delete;
+    /// Destroy a MethodCallExp node.
+    ~MethodCallExp() override;
+    /** \} */
+
+    /// \name Visitors entry point.
+    /// \{ */
+    /// Accept a const visitor \a v.
+    void accept(ConstVisitor& v) const override;
+    /// Accept a non-const visitor \a v.
+    void accept(Visitor& v) override;
+    /// \}
+
+    /// Return instructions executed in the loop.
+    const Exp& exps_get() const;
+    /// Return instructions executed in the loop.
+    Exp& exps_get();
+    /** \} */
+
+  protected:
+    Var* var_;
   };
 } // namespace ast
 #include <ast/method-call-exp.hxx>

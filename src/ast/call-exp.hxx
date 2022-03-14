@@ -10,4 +10,6 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
+  inline const exps_type CallExp::exps_get() const { return *exps_; }
+  inline exps_type CallExp::exps_get() { return *exps_; }
 } // namespace ast
