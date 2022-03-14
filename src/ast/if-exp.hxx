@@ -10,4 +10,11 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
+  inline const Exp& IfExp::test_get() const { return *test_; }
+  inline Exp& IfExp::test_get() { return *test_; }
+
+  inline const Exp& IfExp::body_get() const { return *body_; }
+  inline Exp& IfExp::body_get() { return *body_; }
+
+
 } // namespace ast
