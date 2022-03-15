@@ -264,9 +264,9 @@ exp:
   | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, $1, $3, $6); } //TODO: next time
   | typeid LBRACE rule31 RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
-  | lvalue { $$ = tp.td_.make_SeqExp(@$, $2); }
+  | lvalue { $$ = tp.td_.make_ObjectExp(@$, tp.td_.make_NameTy(@1, $1)); } //BUG: it's trash shit af boi
 
-  | ID LPAREN rule21 RPAREN  
+  | ID LPAREN rule21 RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
   | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpEx::Oper::sub, $2); }
 
@@ -295,11 +295,10 @@ exp:
   | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, $4); }
   ;
 
-  { $$ = tp.td_.make_IntExp(@$, $1); }
   // FIXME: Some code was deleted here (More rules). 
 
 rule21 :
-%empty
+%empty 
   | rule22
 ;
 
@@ -313,11 +312,6 @@ lvalue:
   | lvalue DOT ID
   | lvalue LBRACK exp RBRACK
   ;
-
-/*%token OP "_op";
-op:
-  PLUS | MINUS | TIMES | DIVIDE | EQ | NE | GT | LT | GE | LE | AND | OR ;
-*/
 
 /*---------------.
 | Declarations.  |

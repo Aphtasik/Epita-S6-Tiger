@@ -35,6 +35,7 @@ namespace ast
 
   void PrettyPrinter::operator()(const FieldVar& e)
   {
+    ostr_ << e.var_get() << ": " << e.symb_get();
     // FIXME: Some code was deleted here.
   }
 
