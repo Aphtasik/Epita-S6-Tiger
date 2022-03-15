@@ -258,49 +258,47 @@ rule31:
 
 
 exp:
-  NIL
-  | INT
-  | STRING
-  | ID LBRACK exp RBRACK OF exp
-  | typeid LBRACE rule31 RBRACE
+  NIL { $$ = tp.td_.make_NilExp(@$); }
+  | INT { $$ = tp.td_.make_IntExp(@$, $1); }
+  | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
+  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, $1, $3, $6); } //TODO: next time
+  | typeid LBRACE rule31 RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
-  | lvalue
+  | lvalue { $$ = tp.td_.make_ObjectExp(@$, tp.td_.make_NameTy(@1, $1)); } //BUG: it's trash shit af boi
 
-  | ID LPAREN rule21 RPAREN
+  | ID LPAREN rule21 RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
-  | MINUS exp
-  //| exp op exp
+  | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpEx::Oper::sub, $2); }
 
-  | exp PLUS exp
-  | exp MINUS exp
-  | exp TIMES exp
-  | exp DIVIDE exp
-  | exp EQ exp
-  | exp NE exp
-  | exp GT exp
-  | exp LT exp
-  | exp GE exp
-  | exp LE exp
-  | exp AND exp
-  | exp OR exp
+  | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::add, $3); } //BUG: synthax may be bad
+  | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::sub, $3); } //BUG: synthax may be bad
+  | exp TIMES exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::mul, $3); } //BUG: synthax may be bad
+  | exp DIVIDE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::div, $3); } //BUG: synthax may be bad
+  | exp EQ exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::eq, $3); } //BUG: synthax may be bad
+  | exp NE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ne, $3); } //BUG: synthax may be bad
+  | exp GT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::gt, $3); } //BUG: synthax may be bad
+  | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::lt, $3); } //BUG: synthax may be bad
+  | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ge, $3); } //BUG: synthax may be bad
+  | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::le, $3); } //BUG: synthax may be bad
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $2, false); }
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $2, true, $4); }
 
-  | LPAREN exps RPAREN
+  | LPAREN exps RPAREN { $$ = tp.td_.make_SeqExp(@$, $2); }
 
-  | lvalue ASSIGN exp
+  | lvalue ASSIGN exp { $$ = tp.td_.make_AssignExp(@$, $1, $3); }
 
-  | IF exp THEN exp
-  | IF exp THEN exp ELSE exp
-  | WHILE exp DO exp
-  | FOR ID ASSIGN exp TO exp DO exp
-  | BREAK
-  | LET chunks IN exps END
+  | IF exp THEN exp { $$ = tp.td_.make_IfExp(@$, $2, $4); }
+  | IF exp THEN exp ELSE exp { $$ = tp.td_.make_IfExp(@$, $2, $4, $6); }
+  | WHILE exp DO exp  { $$ = tp.td_.makeWhileExp(@$, $2, $4); }
+  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.makeWhileExp(@$, $2, $4); }
+  | BREAK { $$ = tp.td_.make_BreakExp(@$); }
+  | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, $4); }
   ;
 
-  { $$ = tp.td_.make_IntExp(@$, $1); }
   // FIXME: Some code was deleted here (More rules). 
 
 rule21 :
-%empty
+%empty 
   | rule22
 ;
 
@@ -314,11 +312,6 @@ lvalue:
   | lvalue DOT ID
   | lvalue LBRACK exp RBRACK
   ;
-
-/*%token OP "_op";
-op:
-  PLUS | MINUS | TIMES | DIVIDE | EQ | NE | GT | LT | GE | LE | AND | OR ;
-*/
 
 /*---------------.
 | Declarations.  |
@@ -335,34 +328,44 @@ chunks:
             ..
         end
      which is why we end the recursion with a %empty. */
-  %empty                  
-| tychunk   chunks
-| vardec    chunks
-| fundec    chunks
-| IMPORT STRING
 
-  /* %empty                  { $$ = tp.td_.make_ChunkList(@$); } */
-/* | tychunk   chunks        { $$ = $2; $$->push_front($1); } */
-/* >>>>>>> 2024-tc-2.0 */
-  /* // FIXME: Some code was deleted here (More rules). */
-/* ; */
+  %empty                  { $$ = tp.td_.make_ChunkList(@$); }
+| tychunk   chunks        { $$ = $2; $$->push_front($1); }
+| varchunk  chunks        { $$ = $2; $$->push_front($1); }
+| funchunk  chunks        { $$ = $2; $$->push_front($1); }
+| IMPORT    STRING        { $$ = $2; $$->push_front(parse_import($2)); } //BUG: might be wrong
+  // FIXME: Some code was deleted here (More rules).
+;
 
 /*--------------------.
 | Type Declarations.  |
 `--------------------*/
 
-fundec:
-  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp
-| FUNCTION ID LPAREN tyfields RPAREN EQ exp
-| PRIMITIVE ID LPAREN tyfields RPAREN
-| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid
+funchunk:
+  /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
+     shift-reduce conflict. */
+  fundec %prec CHUNKS  { $$ = tp.td_.make_FunctionChunk(@1); $$->push_front(*$1); }
+| fundec funchunk       { $$ = $2; $$->push_front(*$1); }
 ;
 
+fundec:
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $7, $9); }
+| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_VarDec(@$, $2, $4, tp.td_.make_NameTy(@2, $2), $7); }
+| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_VarDec(@$, $2, $4, tp.td_.make_NameTy(@2, $2), tp.td_.make_exps_type()); }
+| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_VarDec(@$, $2, $4, $7, tp.td_.make_exps_type()); }
+;
 
+varchunk:
+  /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
+     shift-reduce conflict. */
+  vardec %prec CHUNKS  { $$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1); }
+| vardec varchunk       { $$ = $2; $$->push_front(*$1); }
+;
 
 vardec:
-  VAR ID COLON typeid ASSIGN exp
-| VAR ID ASSIGN exp
+  VAR ID COLON typeid ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $6); }
+| VAR ID ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@2, $2), $6); } 
+;
 
 tychunk:
   /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
