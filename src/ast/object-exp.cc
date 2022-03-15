@@ -9,4 +9,14 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
+  ObjectExp::ObjectExp(const Location& location, NameTy* name)
+    : Exp(location)
+    , exps_(exps)
+  {}
+
+  ObjectExp::~ObjectExp() { delete name_; }
+
+  void ObjectExp::accept(ConstVisitor& v) const { v(*this); }
+
+  void ObjectExp::accept(Visitor& v) { v(*this); }
 } // namespace ast
