@@ -13,6 +13,16 @@ namespace ast
   class SeqExp : public Exp
   {
     // FIXME: Some code was deleted here.
+      public:
+          SeqExp(const Location& location, exps_type exps);
+          virtual ~SeqExp();
+          void accept(ConstVisitor& v) const override;
+          void accept(Visitor& v) override;
+          const exps_type& exps_get() const;
+          exps_type& exps_get();
+
+      protected:
+          exps_type exps_;
   };
 } // namespace ast
 #include <ast/seq-exp.hxx>

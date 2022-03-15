@@ -10,4 +10,7 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
+  const exps_type& exps_get() const { return exps_; }
+
+  exps_type& exps_get() { return exps_; }
 } // namespace ast
