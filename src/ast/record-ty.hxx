@@ -10,4 +10,6 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
+  inline const Field& WhileExp::field_get() const { return *field_; }
+  inline Field& WhileExp::field_get() { return *field_; }
 } // namespace ast
