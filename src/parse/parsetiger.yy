@@ -190,16 +190,28 @@
        WHILE        "while"
        EOF 0        "end of file"
 
-%type <ast::Exp*>             exp
-%type <ast::ChunkList*>       chunks
 
-%type <ast::TypeChunk*>       tychunk
-%type <ast::TypeDec*>         tydec
-%type <ast::NameTy*>          typeid
-%type <ast::Ty*>              ty
+//TODO: Section avec val par defauts, a changer
+%type <ast::FieldInit*>      field.2
+%type <ast::fieldinits_type*>field field.1
+%type <ast::exps_type*>      function
+%type <ast::Var*>            lvalue
+%type <ast::exps_type*>      exps
 
-%type <ast::Field*>           tyfield
-%type <ast::fields_type*>     tyfields tyfields.1
+%type <ast::Exp*>            exp function.1 exps.1
+%type <ast::ChunkList*>      chunks
+
+%type <ast::FunChunk*>       funchunk
+%type <ast::FunDec*>         fundec
+%type <ast::VarChunk*>       varchunk
+%type <ast::VarDec*>         vardec
+%type <ast::TypeChunk*>      tychunk
+%type <ast::TypeDec*>        tydec
+%type <ast::NameTy*>         typeid
+%type <ast::Ty*>             ty
+
+%type <ast::Field*>          tyfield
+%type <ast::fields_type*>    tyfields tyfields.1
   // FIXME: Some code was deleted here (More %types).
 
   // FIXME: Some code was deleted here (Priorities/associativities). DONE
@@ -237,36 +249,49 @@ program:
    { tp.ast_ = $1; }
 ;
 
-exps :
-%empty
-| rule1
+function: 
+    %empty { $$ = tp.td_.make_exps_type(); }
+|   function.1 { $$ = $1; }
 ;
 
-rule1:
- exp
- | exp SEMI rule1
- ;
+function.1:
+    function.1 COMMA exp { $$ = $1; $$->emplace_back($3); }
+|   exp  { $$->emplace_back($1); }
+;
 
-rule32:
-%empty
-| COMMA ID EQ exp rule32
+exps :
+    %empty { $$ = tp.td_.make_exps_type(); }
+|   exps { $$ = $1; }
+;
 
+exps.1:
+    exps.1 SEMI exp { $$ = $1; $$->emplace_back($3); }
+|   exp { $$->emplace_back($1); }
+;
 
-rule31:
-%empty
-| ID EQ exp rule32
+field: 
+%empty { $$ = tp.td_.make_fieldinits_type(); }
+| field.1 { $$ = $1; }
+;
 
+field.1:
+    field.1 COMMA field.2 { $$ = $1; $$->emplace_back($3); }
+|   field.2  { $$ = tp.td_.make_fieldinits_type($1); }
+;
+
+field.2:
+    ID EQ exp { $$ = tp.td_.make_FieldInit(@$, $1, $3); }
 
 exp:
   NIL { $$ = tp.td_.make_NilExp(@$); }
   | INT { $$ = tp.td_.make_IntExp(@$, $1); }
   | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
-  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, $1, $3, $6); } //TODO: next time
-  | typeid LBRACE rule31 RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
+  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); } //TODO: next time
+  | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
   | lvalue { $$ = tp.td_.make_ObjectExp(@$, tp.td_.make_NameTy(@1, $1)); } //BUG: it's trash shit af boi
 
-  | ID LPAREN rule21 RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
+  | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
   | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpEx::Oper::sub, $2); }
 
@@ -280,8 +305,8 @@ exp:
   | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::lt, $3); } //BUG: synthax may be bad
   | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ge, $3); } //BUG: synthax may be bad
   | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::le, $3); } //BUG: synthax may be bad
-  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $2, false); }
-  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $2, true, $4); }
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, false); }
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, true, $3); }
 
   | LPAREN exps RPAREN { $$ = tp.td_.make_SeqExp(@$, $2); }
 
@@ -297,14 +322,14 @@ exp:
 
   // FIXME: Some code was deleted here (More rules). 
 
-rule21 :
-%empty 
-  | rule22
+function: 
+%empty { $$ = tp.td_.make_exps_type(); }
+| function.1 { $$ = $1; }
 ;
 
-rule22 :
-  exp
-  | exp COMMA rule22
+function.1:
+    function.1 COMMA exp { $$ = $1; $$->emplace_back($3); }
+|   exp  { $$->emplace_back($1); }
 ;
 
 lvalue:
@@ -364,7 +389,7 @@ varchunk:
 
 vardec:
   VAR ID COLON typeid ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $6); }
-| VAR ID ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@2, $2), $6); } 
+| VAR ID ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@2, $2), $4); } 
 ;
 
 tychunk:
