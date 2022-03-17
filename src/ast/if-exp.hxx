@@ -13,8 +13,11 @@ namespace ast
   inline const Exp& IfExp::test_get() const { return *test_; }
   inline Exp& IfExp::test_get() { return *test_; }
 
-  inline const Exp& IfExp::body_get() const { return *body_; }
-  inline Exp& IfExp::body_get() { return *body_; }
+  inline const Exp& IfExp::thenclause_get() const { return *thenclause_; }
+  inline Exp& IfExp::thenclause_get() { return *thenclause_; }
+
+  inline const Exp& IfExp::elseclause_get() const { return *elseclause_; }
+  inline Exp& IfExp::elseclause_get() { return *elseclause_; }
 
 
 } // namespace ast

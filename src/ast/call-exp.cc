@@ -12,11 +12,13 @@ namespace ast
   // FIXME: Some code was deleted here.
   CallExp::CallExp(const Location& location, exps_type exps)
     : Exp(location)
+    , name_(name)
     , exps_(exps)
   {}
 
   CallExp::~CallExp() {
     delete exps_;
+    delete name_;
   }
 
   void CallExp::accept(ConstVisitor& v) const { v(*this); }

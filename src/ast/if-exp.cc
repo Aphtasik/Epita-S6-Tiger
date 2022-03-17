@@ -9,16 +9,18 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  IfExp::IfExp(const Location& location, Exp* test, Exp* body)
+  IfExp::IfExp(const Location& location, Exp* test, Exp* thenclause, Exp* elseclause)
     : Exp(location)
     , test_(test)
-    , body_(body)
+    , thenclause_(thenclause)
+    , elseclause_(elseclause)
   {}
 
   IfExp::~IfExp()
   {
     delete test_;
-    delete body_;
+    delete thenclause_;
+    delete elseclause_;
   }
 
   void IfExp::accept(ConstVisitor& v) const { v(*this); }

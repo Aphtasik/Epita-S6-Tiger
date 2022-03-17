@@ -19,14 +19,17 @@ namespace ast
    ** factoring tool here.
    */
 
-  class MethodMethodCallExp : public CallExp
+  class MethodCallExp : public CallExp
   {
     // FIXME: Some code was deleted here.
   public:
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a MethodCallExp node.
-    MethodCallExp(const Location& location, exps_type exps, Var* var);
+    MethodCallExp(const location& location,
+                  misc::symbol name,
+                  exps_type* args,
+                  Var* object);
     MethodCallExp(const MethodCallExp&) = delete;
     MethodCallExp& operator=(const MethodCallExp&) = delete;
     /// Destroy a MethodCallExp node.
@@ -42,13 +45,13 @@ namespace ast
     /// \}
 
     /// Return instructions executed in the loop.
-    const Var& var_get() const;
+    const Var& object_get() const;
     /// Return instructions executed in the loop.
-    Var& var_get();
+    Var& object_get();
     /** \} */
 
   protected:
-    Var* var_;
+    Var* object_;
   };
 } // namespace ast
 #include <ast/method-call-exp.hxx>

@@ -18,7 +18,7 @@ namespace ast
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a IfExp node.
-    IfExp(const Location& location, Exp* test, Exp* body);
+    IfExp(const Location& location, Exp* test, Exp* thenclause, Exp* elseclause);
     IfExp(const IfExp&) = delete;
     IfExp& operator=(const IfExp&) = delete;
     /// Destroy a IfExp node.
@@ -40,16 +40,20 @@ namespace ast
     /// Return exit condition of the loop.
     Exp& test_get();
     /// Return instructions executed in the loop.
-    const Exp& body_get() const;
+    const Exp& thenclause_get() const;
     /// Return instructions executed in the loop.
-    Exp& body_get();
+    Exp& thenclause_get();
     /** \} */
+    const Exp& elseclause_get() const;
+    /// Return instructions executed in the loop.
+    Exp& elseclause_get();
 
   protected:
     /// Exit condition of the loop.
     Exp* test_;
     /// Instructions executed in the loop.
-    Exp* body_;
+    Exp* thenclause_;
+    Exp* elseclause_;
   };
 } // namespace ast
 #include <ast/if-exp.hxx>

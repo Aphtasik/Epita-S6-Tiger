@@ -16,7 +16,7 @@ namespace ast
   {
     // FIXME: Some code was deleted here.
   public:
-    LetExp(const Location& location, DecsList* dec, Exp* exp);
+    LetExp(const Location& location, ChunkList* dec, Exp* exp);
     virtual ~LetExp();
     void accept(ConstVisitor& v) const override;
     void accept(Visitor& v) override;

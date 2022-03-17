@@ -9,16 +9,17 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  MethodMethodCallExp::MethodMethodCallExp(const Location& location,
-                                           exps_type exps,
-                                           Var* var)
-    : CallExp(location, exps)
-    , var_(var)
+  MethodCallExp::MethodCallExp(const location& location,
+                               misc::symbol name,
+                               exps_type* args,
+                               Var* object)
+    : CallExp(location, name, args)
+    , object_(object)
   {}
 
-  MethodMethodCallExp::~MethodMethodCallExp() { delete var_; }
+  MethodCallExp::~MethodCallExp() { delete object_; }
 
-  void MethodMethodCallExp::accept(ConstVisitor& v) const { v(*this); }
+  void MethodCallExp::accept(ConstVisitor& v) const { v(*this); }
 
-  void MethodMethodCallExp::accept(Visitor& v) { v(*this); }
+  void MethodCallExp::accept(Visitor& v) { v(*this); }
 } // namespace ast

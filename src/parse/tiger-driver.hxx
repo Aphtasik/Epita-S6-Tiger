@@ -94,7 +94,7 @@ namespace parse
                                              ast::Exp* thenclause) const
   {
     // FIXME: Some code was deleted here (Constructor of IfExp).
-    return ast::IfExp::IfExp(location, test, thenclause);
+    return ast::IfExp::IfExp(location, test, thenclause, nullptr);
   }
 
   inline ast::WhileExp* TigerDriver::make_WhileExp(const location& location,

@@ -19,7 +19,7 @@ namespace ast
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a CallExp node.
-    CallExp(const Location& location, exps_type exps);
+    CallExp(const Location& location, misc::symbol name, exps_type args);
     CallExp(const CallExp&) = delete;
     CallExp& operator=(const CallExp&) = delete;
     /// Destroy a CallExp node.
@@ -40,8 +40,17 @@ namespace ast
     Exp& exps_get();
     /** \} */
 
+    const exps_type& args_get() const;
+    /// Return instructions executed in the loop.
+    exps_type& args_get();
+
+    const misc::symbol name_get() const;
+    /// Return instructions executed in the loop.
+    misc::symbol name_get();
+
   protected:
     exps_type exps_;
+    misc::symbol name_;
   };
 } // namespace ast
 #include <ast/call-exp.hxx>
