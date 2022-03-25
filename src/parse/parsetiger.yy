@@ -261,7 +261,7 @@ function.1:
 
 exps :
     %empty { $$ = tp.td_.make_exps_type(); }
-|   exps { $$ = $1; }
+|   exps.1 { $$ = $1; }
 ;
 
 exps.1:
