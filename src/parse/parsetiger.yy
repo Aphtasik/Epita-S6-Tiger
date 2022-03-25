@@ -221,6 +221,9 @@
   %precedence DO
   %precedence OF
   %precedence ASSIGN
+  %precedence LBRACK
+  %precedence ID
+
   %left OR
   %left AND
   %left LE LT NE EQ GT GE
@@ -235,6 +238,11 @@
 // We want the latter.
 %precedence CHUNKS
 %precedence TYPE
+%precedence FUNCTION
+%precedence VAR
+%precedence PRIMITIVE
+
+
   // FIXME: Some code was deleted here (Other declarations).
 
 %start program
@@ -258,6 +266,7 @@ function.1:
     function.1 COMMA exp { $$ = $1; $$->emplace_back($3); }
 |   exp  { $$->emplace_back($1); }
 ;
+
 
 exps :
     %empty { $$ = tp.td_.make_exps_type(); }
@@ -321,16 +330,6 @@ exp:
   ;
 
   // FIXME: Some code was deleted here (More rules). 
-
-function: 
-%empty { $$ = tp.td_.make_exps_type(); }
-| function.1 { $$ = $1; }
-;
-
-function.1:
-    function.1 COMMA exp { $$ = $1; $$->emplace_back($3); }
-|   exp  { $$->emplace_back($1); }
-;
 
 lvalue:
   ID
