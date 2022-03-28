@@ -103,17 +103,17 @@ namespace ast
       }
   }
   void PrettyPrinter::operator()(const IntExp& e) {
-    ostr << e.value_get();
+    ostr_ << e.value_get();
   }
   void PrettyPrinter::operator()(const LetExp& e) {
-    ostr << "let " << e.chunklist_get() << " in " << e.exp_get() << " end" << "\n";
+    ostr_ << "let " << e.chunklist_get() << " in " << e.exp_get() << " end" << "\n";
   }
   void PrettyPrinter::operator()(const NilExp& e) {
-      ostr << "nil";
+      ostr_ << "nil";
   }
   void PrettyPrinter::operator()(const ObjectExp& e) {}
   void PrettyPrinter::operator()(const OpExp& e) {
-    ostr << e.left_get() << " " << e.oper_get() << " " << e.right_get();
+    ostr_ << e.left_get() << " " << e.oper_get() << " " << e.right_get();
   }
   void PrettyPrinter::operator()(const RecordExp& e)
   {
@@ -123,19 +123,19 @@ namespace ast
     for (auto i = 0; i < vec.size() - 1; i++)
       ostr_ << vec.at(i) << ", ";
     // putting the last item without the coma
-    ostr << *(--vec.end()) << '}';
+    ostr_ << *(--vec.end()) << '}';
   }
   void PrettyPrinter::operator()(const SeqExp& e) {
-    ostr << "(" << e.exps_get() << ")";
+    ostr_ << "(" << e.exps_get() << ")";
   }
   void PrettyPrinter::operator()(const StringExp& e) {
-    ostr << e.name_get();
+    ostr_ << e.name_get();
   }
   void PrettyPrinter::operator()(const WhileExp& e) {
     ostr_ << "while " << e.test_get() << " do\n" << "  " << e.body_get();
   }
   void PrettyPrinter::operator()(const ArrayTy& e) {
-    ostr << e.arr_type_get() << "[" << e.arr_length_get() << "] of " << e.arr_val_get();
+    ostr_ << e.arr_type_get() << "[" << e.arr_length_get() << "] of " << e.arr_val_get();
   }
   void PrettyPrinter::operator()(const ClassTy& e) {}
   void PrettyPrinter::operator()(const NameTy& e) {}
