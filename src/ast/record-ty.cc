@@ -10,8 +10,8 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  RecordTy::RecordTy(const Location& location, Field* field)
-    : Exp(location)
+  RecordTy::RecordTy(const Location& location, fields_type* field)
+    : Ty(location)
     , field_(field)
   {}
 

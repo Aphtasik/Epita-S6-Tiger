@@ -10,6 +10,6 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  inline const NameTy* ObjectExp::name_get() const { return *name_; }
-  inline NameTy* ObjectExp::name_get() { return *name_; }
+  inline const NameTy& ObjectExp::name_get() const { return *name_; }
+  inline NameTy& ObjectExp::name_get() { return *name_; }
 } // namespace ast

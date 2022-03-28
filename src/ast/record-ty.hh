@@ -18,7 +18,7 @@ namespace ast
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a RecordTy node.
-    RecordTy(const Location& location, Field* field);
+    RecordTy(const Location& location, fields_type* field);
     RecordTy(const RecordTy&) = delete;
     RecordTy& operator=(const RecordTy&) = delete;
     /// Destroy a RecordTy node.
@@ -36,12 +36,12 @@ namespace ast
     /** \name Accessors.
      ** \{ */
     /// Return exit condition of the loop.
-    const Field& field_get() const;
+    const fields_type& field_get() const;
     /// Return exit condition of the loop.
-    Field& field_get();
+    fields_type& field_get();
 
   protected:
-    Field* field_;
+    fields_type* field_;
   };
 } // namespace ast
 #include <ast/record-ty.hxx>

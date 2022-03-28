@@ -14,7 +14,7 @@ namespace ast
     , name_(name)
   {}
 
-  StringExp::~StringExp() { delete name_; }
+  StringExp::~StringExp() {}
 
   void StringExp::accept(ConstVisitor& v) const { v(*this); }
 

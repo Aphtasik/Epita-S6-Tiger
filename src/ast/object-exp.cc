@@ -11,7 +11,7 @@ namespace ast
   // FIXME: Some code was deleted here.
   ObjectExp::ObjectExp(const Location& location, NameTy* name)
     : Exp(location)
-    , exps_(exps)
+    , name_(name)
   {}
 
   ObjectExp::~ObjectExp() { delete name_; }

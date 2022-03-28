@@ -10,7 +10,7 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  RecordExp::RecordExp(const Location& location, NameTy* rec, fieldinits_type vec)
+  RecordExp::RecordExp(const Location& location, NameTy* rec, fieldinits_type *vec)
     : Exp(location)
     , rec_(rec)
     , vec_(vec)

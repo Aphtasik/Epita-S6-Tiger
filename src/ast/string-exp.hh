@@ -42,7 +42,7 @@ namespace ast
 
   protected:
     /// Exit condition of the loop.
-    std::string name_
+    std::string name_;
   };
 } // namespace ast
 #include <ast/string-exp.hxx>

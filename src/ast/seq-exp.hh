@@ -14,7 +14,7 @@ namespace ast
   {
     // FIXME: Some code was deleted here.
       public:
-          SeqExp(const Location& location, exps_type exps);
+          SeqExp(const Location& location, exps_type *exps);
           virtual ~SeqExp();
           void accept(ConstVisitor& v) const override;
           void accept(Visitor& v) override;
@@ -22,7 +22,7 @@ namespace ast
           exps_type& exps_get();
 
       protected:
-          exps_type exps_;
+          exps_type *exps_;
   };
 } // namespace ast
 #include <ast/seq-exp.hxx>
