@@ -192,6 +192,7 @@
 
 
 //TODO: Section avec val par defauts, a changer
+// FIXME: Some code was deleted here (More %types).
 %type <ast::FieldInit*>      field.2
 %type <ast::fieldinits_type*>field field.1
 %type <ast::exps_type*>      function
@@ -212,8 +213,8 @@
 
 %type <ast::Field*>          tyfield
 %type <ast::fields_type*>    tyfields tyfields.1
-  // FIXME: Some code was deleted here (More %types).
 
+%destructor { printf("destruct exps"); } <ast::exps_type*>
   // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
   %precedence THEN
@@ -298,22 +299,22 @@ exp:
   | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); } //TODO: next time
   | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
-  | lvalue { $$ = tp.td_.make_ObjectExp(@$, tp.td_.make_NameTy(@1, $1)); } //BUG: it's trash shit af boi
+  | lvalue { $$ = $1; } //BUG: it's trash shit af boi
 
   | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
   | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpEx::Oper::sub, $2); }
 
-  | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::add, $3); } //BUG: synthax may be bad
-  | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::sub, $3); } //BUG: synthax may be bad
-  | exp TIMES exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::mul, $3); } //BUG: synthax may be bad
-  | exp DIVIDE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::div, $3); } //BUG: synthax may be bad
-  | exp EQ exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::eq, $3); } //BUG: synthax may be bad
-  | exp NE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ne, $3); } //BUG: synthax may be bad
-  | exp GT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::gt, $3); } //BUG: synthax may be bad
-  | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::lt, $3); } //BUG: synthax may be bad
-  | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ge, $3); } //BUG: synthax may be bad
-  | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::le, $3); } //BUG: synthax may be bad
+  | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::add, $3); }
+  | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::sub, $3); }
+  | exp TIMES exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::mul, $3); }
+  | exp DIVIDE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::div, $3); }
+  | exp EQ exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::eq, $3); }
+  | exp NE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ne, $3); }
+  | exp GT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::gt, $3); }
+  | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::lt, $3); }
+  | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ge, $3); }
+  | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::le, $3); }
   | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, false); }
   | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, true, $3); }
 
@@ -332,9 +333,9 @@ exp:
   // FIXME: Some code was deleted here (More rules). 
 
 lvalue:
-  ID
-  | lvalue DOT ID
-  | lvalue LBRACK exp RBRACK
+  ID { $$ = tp.td_.make_SimpleVar(@$, $1); }
+  | lvalue DOT ID { $$ = tp.td_.make_FieldVar(@$, $1, $3); }
+  | lvalue LBRACK exp RBRACK { $$ = tp.td_.make_SubscriptVar(@$, $1, $3); }
   ;
 
 /*---------------.
