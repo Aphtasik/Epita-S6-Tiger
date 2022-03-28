@@ -32,6 +32,5 @@ namespace ast
     void accept(Visitor& v) override;
     /// \}
   };
-};
 } // namespace ast
 #include <ast/break-exp.hxx>

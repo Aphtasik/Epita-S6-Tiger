@@ -10,9 +10,9 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  inline const exps_type CallExp::exps_get() const { return *exps_; }
-  inline exps_type CallExp::exps_get() { return *exps_; }
+  inline const exps_type& CallExp::exps_get() const { return *exps_; }
+  inline exps_type& CallExp::exps_get() { return *exps_; }
 
-  inline const misc::symbol MethodCallExp::name_get() const { return *name_; }
-  inline misc::symbol MethodCallExp::name_get() { return *name_; }*/
+  inline const misc::symbol CallExp::name_get() const { return name_; }
+  inline misc::symbol CallExp::name_get() { return name_; }
 } // namespace ast

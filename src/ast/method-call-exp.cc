@@ -9,7 +9,7 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  MethodCallExp::MethodCallExp(const location& location,
+  MethodCallExp::MethodCallExp(const Location& location,
                                misc::symbol name,
                                exps_type* args,
                                Var* object)

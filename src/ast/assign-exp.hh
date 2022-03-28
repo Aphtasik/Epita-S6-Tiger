@@ -42,7 +42,7 @@ namespace ast
     /// Return instructions executed in the loop.
     const Exp& exp_get() const;
     /// Return instructions executed in the loop.
-    Var& exp_get();
+    Exp& exp_get();
     /** \} */
 
   protected:

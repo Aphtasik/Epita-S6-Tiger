@@ -26,7 +26,7 @@ namespace ast
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a MethodCallExp node.
-    MethodCallExp(const location& location,
+    MethodCallExp(const Location& location,
                   misc::symbol name,
                   exps_type* args,
                   Var* object);

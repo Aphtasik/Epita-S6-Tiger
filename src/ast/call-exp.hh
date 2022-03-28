@@ -33,17 +33,11 @@ namespace ast
     /// Accept a non-const visitor \a v.
     void accept(Visitor& v) override;
     /// \}
-    // get the id of the function
-    const misc::symbol name_get();
     /// Return instructions executed in the loop.
-    const Exp& exps_get() const;
+    const exps_type& exps_get() const;
     /// Return instructions executed in the loop.
-    Exp& exps_get();
+    exps_type& exps_get();
     /** \} */
-
-    const exps_type& args_get() const;
-    /// Return instructions executed in the loop.
-    exps_type& args_get();
 
     const misc::symbol name_get() const;
     /// Return instructions executed in the loop.
@@ -51,8 +45,7 @@ namespace ast
 
   protected:
     misc::symbol name_;
-    exps_type exps_;
-    misc::symbol name_;
+    exps_type *exps_;
   };
 } // namespace ast
 #include <ast/call-exp.hxx>

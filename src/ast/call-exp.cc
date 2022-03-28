@@ -10,7 +10,7 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  CallExp::CallExp(const Location& location, misc::symbol name, exps_type exps)
+  CallExp::CallExp(const Location& location, misc::symbol name, exps_type* exps)
     : Exp(location)
     , name_(name)
     , exps_(exps)
@@ -18,7 +18,6 @@ namespace ast
 
   CallExp::~CallExp() {
     delete exps_;
-    delete name_;
   }
 
   void CallExp::accept(ConstVisitor& v) const { v(*this); }

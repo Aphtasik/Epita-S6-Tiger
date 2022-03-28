@@ -21,6 +21,9 @@ namespace ast
 
   ArrayExp::~ArrayExp()
   {
+      delete arr_type_;
+      delete arr_length_;
+      delete arr_val_;
   }
 
   void ArrayExp::accept(ConstVisitor& v) const { v(*this); }

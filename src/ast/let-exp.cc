@@ -10,8 +10,8 @@ namespace ast
 {
   // FIXME: Some code was deleted here.
   LetExp::LetExp(const Location& location, ChunkList* chunklist, Exp* exp)
-    : Exp(Location)
-    , chunklist_(chuncklist)
+    : Exp(location)
+    , chunklist_(chunklist)
     , exp_(exp)
   {}
 

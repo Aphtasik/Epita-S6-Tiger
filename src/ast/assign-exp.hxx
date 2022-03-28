@@ -18,16 +18,16 @@ namespace ast
     /// Return exit condition of the loop.
     inline Var& AssignExp::var_get()
     {
-        return this->var_;
+        return *this->var_;
     }
     /// Return instructions executed in the loop.
     inline const Exp& AssignExp::exp_get() const
     {
-        return this->exp_;
+        return *this->exp_;
     }
     /// Return instructions executed in the loop.
     inline Exp& AssignExp::exp_get()
     {
-        return this->exp_;
+        return *this->exp_;
     }
 } // namespace ast
