@@ -10,7 +10,7 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  CallExp::CallExp(const Location& location, exps_type exps)
+  CallExp::CallExp(const Location& location, misc::symbol name, exps_type exps)
     : Exp(location)
     , name_(name)
     , exps_(exps)

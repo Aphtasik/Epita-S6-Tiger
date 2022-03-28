@@ -18,7 +18,10 @@ namespace ast
     /** \name Ctor & dtor.
      ** \{ */
     /// Construct a IfExp node.
-    IfExp(const Location& location, Exp* test, Exp* thenclause, Exp* elseclause);
+    IfExp(const Location& location,
+          Exp* test,
+          Exp* thenclause,
+          Exp* elseclause);
     IfExp(const IfExp&) = delete;
     IfExp& operator=(const IfExp&) = delete;
     /// Destroy a IfExp node.
@@ -43,6 +46,13 @@ namespace ast
     const Exp& thenclause_get() const;
     /// Return instructions executed in the loop.
     Exp& thenclause_get();
+<<<<<<< HEAD
+=======
+    /// Return instructions executed in the loop.
+    const Exp& elseclause_get() const;
+    /// Return instructions executed in the loop.
+    Exp& elseclause_get();
+>>>>>>> 97f958d (feat: prettyprint but not tested)
     /** \} */
     const Exp& elseclause_get() const;
     /// Return instructions executed in the loop.

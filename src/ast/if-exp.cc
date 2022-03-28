@@ -9,7 +9,10 @@
 namespace ast
 {
   // FIXME: Some code was deleted here.
-  IfExp::IfExp(const Location& location, Exp* test, Exp* thenclause, Exp* elseclause)
+  IfExp::IfExp(const Location& location,
+               Exp* test,
+               Exp* thenclause,
+               Exp* elseclause)
     : Exp(location)
     , test_(test)
     , thenclause_(thenclause)

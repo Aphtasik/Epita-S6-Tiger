@@ -51,7 +51,7 @@ namespace ast
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<IntExp>&)
-  }
+  {}
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<StringExp>&)
