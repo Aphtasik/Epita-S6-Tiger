@@ -18,7 +18,7 @@ namespace ast
   AssignExp::~AssignExp()
   {
     delete var_;
-    delete expd_;
+    delete exp_;
   }
 
   void AssignExp::accept(ConstVisitor& v) const { v(*this); }

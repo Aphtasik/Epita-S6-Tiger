@@ -21,8 +21,6 @@ namespace ast
 
   ArrayExp::~ArrayExp()
   {
-    delete test_;
-    delete body_;
   }
 
   void ArrayExp::accept(ConstVisitor& v) const { v(*this); }

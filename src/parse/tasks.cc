@@ -37,8 +37,8 @@ namespace parse::tasks
     if (!result.first)
       task_error().exit();
 
-    reset(the_program);
-    the_program = make_unique<ast::ChunkList>(result.first);
+    reset(ast::tasks::the_program);
+    ast::tasks::the_program = std::make_unique<ast::ChunkList>(result.first);
     // FIXME: Some code was deleted here.
   }
 

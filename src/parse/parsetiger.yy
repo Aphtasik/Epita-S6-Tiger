@@ -15,7 +15,7 @@
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
   // FIXME: Some code was deleted here (Other directives). DONE
-%expect 1
+%expect 0 //TODO: change this
 %expect-rr 0
 
 %define parse.error verbose
