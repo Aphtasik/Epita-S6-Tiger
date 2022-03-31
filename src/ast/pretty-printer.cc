@@ -60,9 +60,10 @@ namespace ast
     ostr_ << " =\n(" << misc::incendl << e.body_get() << misc::decendl << ')';
   }
   void PrettyPrinter::operator()(const MethodDec& e) {} //TODO
+
   void PrettyPrinter::operator()(const TypeDec& e)
   {
-    ostr_ << "type " << e->name_get() << "=" << e.ty_get();
+    ostr_ << "type " << e.name_get() << "=" << e.ty_get();
   }
   void PrettyPrinter::operator()(const VarDec& e)
   {
@@ -89,14 +90,14 @@ namespace ast
   void PrettyPrinter::operator()(const MethodCallExp& e) {}
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for " e.vardec_get() << " to " << e.hi_get() << " do "
+    ostr_ << "for " << e.vardec_get() << " to " << e.hi_get() << " do "
           << "\n"
           << misc::incindent << e.body_get() << misc::decindent << "\n";
   }
   void PrettyPrinter::operator()(const IfExp& e) {
     ostr_ << "if (" << e.test_get() << ") then\n"
     << misc::incindent << e.thenclause_get() << misc::decindent;
-    if (e.elseclause_get() != nullptr)
+    if (e.elseclause_get())
       {
         ostr_ << "\nelse\n" << misc::incindent << e.elseclause_get()
         << misc::decindent << '\n';
@@ -120,7 +121,7 @@ namespace ast
     ostr_ << e.rec_get() << "= {";
     auto vec = e.vec_get();
     // printing each field one by one
-    for (auto i = 0; i < vec.size() - 1; i++)
+    for (size_t i = 0; i < vec.size() - 1; i++)
       ostr_ << vec.at(i) << ", ";
     // putting the last item without the coma
     ostr_ << *(--vec.end()) << '}';

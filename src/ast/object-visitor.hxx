@@ -27,9 +27,9 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<ClassTy>& e)
   {
+    // FIXME: Some code was deleted here. DONE
       e.chunks_get().accept(*this);
       e.super_get().accept(*this);
-    // FIXME: Some code was deleted here. DONE
   }
 
   template <template <typename> class Const>
@@ -47,15 +47,15 @@ namespace ast
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<MethodCallExp>& e)
   {
-      e.var_get().(*this)
     // FIXME: Some code was deleted here. DONE
+      e.var_get().accept(*this);
   }
 
   template <template <typename> class Const>
   void GenObjectVisitor<Const>::operator()(const_t<ObjectExp>& e)
   {
-      e.name_get().(*this)
     // FIXME: Some code was deleted here. DONE
+      e.name_get().accept(*this);
   }
 
 } // namespace ast

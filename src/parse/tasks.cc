@@ -37,9 +37,9 @@ namespace parse::tasks
     if (!result.first)
       task_error().exit();
 
-    reset(ast::tasks::the_program);
-    ast::tasks::the_program = std::make_unique<ast::ChunkList>(result.first);
     // FIXME: Some code was deleted here.
+    ast::tasks::the_program.reset(nullptr);
+    ast::tasks::the_program = std::make_unique<ast::ChunkList>(result.first);
   }
 
   void library_display() { std::cout << l << '\n'; }

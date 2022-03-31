@@ -124,7 +124,7 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<LetExp>& e)
   {
-      e.chunkList_get().accept(*this);
+      e.chunklist_get().accept(*this);
       e.exp_get().accept(*this);
     // FIXME: Some code was deleted here. DONE
   }
@@ -132,7 +132,7 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<ArrayExp>& e)
   {
-      e.arr_lenght_get().accept(*this);
+      e.arr_length_get().accept(*this);
       e.arr_type_get().accept(*this);
       e.arr_val_get().accept(*this);
     // FIXME: Some code was deleted here. DONE

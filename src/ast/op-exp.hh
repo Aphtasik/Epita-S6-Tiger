@@ -64,7 +64,6 @@ namespace ast
     /// Return right operand.
     Exp& right_get();
     /** \} */
-
   protected:
     /// Left operand.
     Exp* left_;
