@@ -341,10 +341,10 @@ namespace parse {
       char dummy4[sizeof (ast::FieldInit*)];
 
       // funchunk
-      char dummy5[sizeof (ast::FunChunk*)];
+      char dummy5[sizeof (ast::FunctionChunk*)];
 
       // fundec
-      char dummy6[sizeof (ast::FunDec*)];
+      char dummy6[sizeof (ast::FunctionDec*)];
 
       // typeid
       char dummy7[sizeof (ast::NameTy*)];
@@ -630,11 +630,11 @@ namespace parse {
         break;
 
       case symbol_kind::S_funchunk: // funchunk
-        value.move< ast::FunChunk* > (std::move (that.value));
+        value.move< ast::FunctionChunk* > (std::move (that.value));
         break;
 
       case symbol_kind::S_fundec: // fundec
-        value.move< ast::FunDec* > (std::move (that.value));
+        value.move< ast::FunctionDec* > (std::move (that.value));
         break;
 
       case symbol_kind::S_typeid: // typeid
@@ -772,13 +772,13 @@ namespace parse {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, ast::FunChunk*&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::FunctionChunk*&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const ast::FunChunk*& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::FunctionChunk*& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -786,13 +786,13 @@ namespace parse {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
-      basic_symbol (typename Base::kind_type t, ast::FunDec*&& v, location_type&& l)
+      basic_symbol (typename Base::kind_type t, ast::FunctionDec*&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
         , location (std::move (l))
       {}
 #else
-      basic_symbol (typename Base::kind_type t, const ast::FunDec*& v, const location_type& l)
+      basic_symbol (typename Base::kind_type t, const ast::FunctionDec*& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1013,11 +1013,11 @@ namespace parse {
         break;
 
       case symbol_kind::S_funchunk: // funchunk
-        value.copy< ast::FunChunk* > (that.value);
+        value.copy< ast::FunctionChunk* > (that.value);
         break;
 
       case symbol_kind::S_fundec: // fundec
-        value.copy< ast::FunDec* > (that.value);
+        value.copy< ast::FunctionDec* > (that.value);
         break;
 
       case symbol_kind::S_typeid: // typeid
@@ -1108,11 +1108,11 @@ namespace parse {
         break;
 
       case symbol_kind::S_funchunk: // funchunk
-        value.move< ast::FunChunk* > (std::move (that.value));
+        value.move< ast::FunctionChunk* > (std::move (that.value));
         break;
 
       case symbol_kind::S_fundec: // fundec
-        value.move< ast::FunDec* > (std::move (that.value));
+        value.move< ast::FunctionDec* > (std::move (that.value));
         break;
 
       case symbol_kind::S_typeid: // typeid
@@ -1226,11 +1226,11 @@ switch (yykind)
         break;
 
       case symbol_kind::S_funchunk: // funchunk
-        value.template destroy< ast::FunChunk* > ();
+        value.template destroy< ast::FunctionChunk* > ();
         break;
 
       case symbol_kind::S_fundec: // fundec
-        value.template destroy< ast::FunDec* > ();
+        value.template destroy< ast::FunctionDec* > ();
         break;
 
       case symbol_kind::S_typeid: // typeid
@@ -2432,11 +2432,11 @@ switch (yykind)
         break;
 
       case symbol_kind::S_funchunk: // funchunk
-        value.copy< ast::FunChunk* > (YY_MOVE (that.value));
+        value.copy< ast::FunctionChunk* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_fundec: // fundec
-        value.copy< ast::FunDec* > (YY_MOVE (that.value));
+        value.copy< ast::FunctionDec* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_typeid: // typeid
@@ -2537,11 +2537,11 @@ switch (yykind)
         break;
 
       case symbol_kind::S_funchunk: // funchunk
-        value.move< ast::FunChunk* > (YY_MOVE (s.value));
+        value.move< ast::FunctionChunk* > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_fundec: // fundec
-        value.move< ast::FunDec* > (YY_MOVE (s.value));
+        value.move< ast::FunctionDec* > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_typeid: // typeid

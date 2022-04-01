@@ -202,8 +202,8 @@
 %type <ast::Exp*>            exp function.1 exps.1
 %type <ast::ChunkList*>      chunks
 
-%type <ast::FunChunk*>       funchunk
-%type <ast::FunDec*>         fundec
+%type <ast::FunctionChunk*>       funchunk
+%type <ast::FunctionDec*>         fundec
 %type <ast::VarChunk*>       varchunk
 %type <ast::VarDec*>         vardec
 %type <ast::TypeChunk*>      tychunk
@@ -303,7 +303,7 @@ exp:
 
   | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
-  | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpEx::Oper::sub, $2); }
+  | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpExp::Oper::sub, $2); }
 
   | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3); }
   | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3); }
@@ -324,8 +324,8 @@ exp:
 
   | IF exp THEN exp { $$ = tp.td_.make_IfExp(@$, $2, $4); }
   | IF exp THEN exp ELSE exp { $$ = tp.td_.make_IfExp(@$, $2, $4, $6); }
-  | WHILE exp DO exp  { $$ = tp.td_.makeWhileExp(@$, $2, $4); }
-  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.makeWhileExp(@$, $2, $4); }
+  | WHILE exp DO exp  { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
+  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
   | BREAK { $$ = tp.td_.make_BreakExp(@$); }
   | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, $4); }
   ;
@@ -358,7 +358,7 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
-| IMPORT    STRING        { $$ = $2; $$->push_front(parse_import($2)); } //BUG: might be wrong
+| IMPORT    STRING        { $$ = $2; $$->push_front(parse::parse_import($2)); } //BUG: might be wrong
   // FIXME: Some code was deleted here (More rules).
 ;
 
