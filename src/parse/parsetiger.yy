@@ -305,16 +305,16 @@ exp:
 
   | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpEx::Oper::sub, $2); }
 
-  | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::add, $3); }
-  | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::sub, $3); }
-  | exp TIMES exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::mul, $3); }
-  | exp DIVIDE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::div, $3); }
-  | exp EQ exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::eq, $3); }
-  | exp NE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ne, $3); }
-  | exp GT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::gt, $3); }
-  | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::lt, $3); }
-  | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::ge, $3); }
-  | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpEx::Oper::le, $3); }
+  | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3); }
+  | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3); }
+  | exp TIMES exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::mul, $3); }
+  | exp DIVIDE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3); }
+  | exp EQ exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::eq, $3); }
+  | exp NE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, $3); }
+  | exp GT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::gt, $3); }
+  | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3); }
+  | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3); }
+  | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3); }
   | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, false); }
   | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, true, $3); }
 

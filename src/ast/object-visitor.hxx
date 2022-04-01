@@ -48,7 +48,7 @@ namespace ast
   void GenObjectVisitor<Const>::operator()(const_t<MethodCallExp>& e)
   {
     // FIXME: Some code was deleted here. DONE
-      e.var_get().accept(*this);
+      e.object_get().accept(*this);
   }
 
   template <template <typename> class Const>
