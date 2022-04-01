@@ -39,20 +39,21 @@ namespace ast
     /** \name Accessors.
      ** \{ */
     /// Return exit condition of the loop.
-    const Exp& test_get() const;
+    const Exp* test_get() const;
     /// Return exit condition of the loop.
-    Exp& test_get();
+    Exp* test_get();
     /// Return instructions executed in the loop.
-    const Exp& thenclause_get() const;
+    const Exp* thenclause_get() const;
     /// Return instructions executed in the loop.
-    Exp& thenclause_get();
+    Exp* thenclause_get();
     /// Return instructions executed in the loop.
-    const Exp& elseclause_get() const;
+    const Exp* elseclause_get() const;
     /// Return instructions executed in the loop.
-    Exp& elseclause_get();
+    Exp* elseclause_get();
 
   protected:
     /// Exit condition of the loop.
+    // need to be a pointer because of the else clause that can be null
     Exp* test_;
     /// Instructions executed in the loop.
     Exp* thenclause_;
