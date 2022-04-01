@@ -127,7 +127,7 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<LetExp>& e)
   {
-      // FIXME: Some code was deleted here. DONE
+    // FIXME: Some code was deleted here. DONE
       e.chunklist_get().accept(*this);
       e.exp_get().accept(*this);
   }
@@ -135,7 +135,7 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<ArrayExp>& e)
   {
-      // FIXME: Some code was deleted here. DONE
+    // FIXME: Some code was deleted here. DONE
       e.arr_length_get().accept(*this);
       e.arr_type_get().accept(*this);
       e.arr_val_get().accept(*this);
@@ -200,6 +200,7 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<FunctionDec>& e)
   {
+    // FIXME: Some code was deleted here. DONE
     e.formals_get().accept(*this);
     e.result_get()->accept(*this);
     e.body_get()->accept(*this);
@@ -220,7 +221,7 @@ namespace ast
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<NameTy>&)
-  {}
+  {} // TODO ?
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<RecordTy>& e)
