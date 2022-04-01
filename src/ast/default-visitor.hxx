@@ -33,9 +33,8 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<FieldVar>& e)
   {
-      e.var_get().accept(*this);
-      e.symb_get().accept(*this);
     // FIXME: Some code was deleted here. DONE
+      e.var_get().accept(*this);
   }
 
   template <template <typename> class Const>
@@ -60,8 +59,9 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<CallExp>& e)
   {
-    e.exps_get().accept(*this);
     // FIXME: Some code was deleted here. DONE
+    for (auto& exp : e.exps_get())
+      exp->accept(*this);
   }
 
   template <template <typename> class Const>
@@ -74,32 +74,35 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<RecordExp>& e)
   {
-    e.rec_get().accept(*this);
-    e.vec_get().accept(*this);
     // FIXME: Some code was deleted here. DONE
+    e.rec_get().accept(*this);
+    for (auto field : e.vec_get())
+      field->accept(*this);
   }
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<SeqExp>& e)
   {
-      e.exps_get().accept(*this);
-    // FIXME: Some code was deleted here. DONE
+      // FIXME: Some code was deleted here. DONE
+      for (auto& exp : e.exps_get())
+        exp->accept(*this);
   }
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<AssignExp>& e)
   {
+      // FIXME: Some code was deleted here. DONE
       e.exp_get().accept(*this);
       e.var_get().accept(*this);
-    // FIXME: Some code was deleted here. DONE
   }
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<IfExp>& e)
   {
-      e.body_get().accept(*this);
-      e.test_get().accept(*this);
-    // FIXME: Some code was deleted here. DONE
+      // FIXME: Some code was deleted here. DONE
+      e.test_get()->accept(*this);
+      e.thenclause_get()->accept(*this);
+      e.elseclause_get()->accept(*this);
   }
 
   template <template <typename> class Const>
@@ -124,18 +127,18 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<LetExp>& e)
   {
+      // FIXME: Some code was deleted here. DONE
       e.chunklist_get().accept(*this);
       e.exp_get().accept(*this);
-    // FIXME: Some code was deleted here. DONE
   }
 
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<ArrayExp>& e)
   {
+      // FIXME: Some code was deleted here. DONE
       e.arr_length_get().accept(*this);
       e.arr_type_get().accept(*this);
       e.arr_val_get().accept(*this);
-    // FIXME: Some code was deleted here. DONE
   }
 
   template <template <typename> class Const>
@@ -154,8 +157,9 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<ChunkList>& e)
   {
-    e.chunks_get().accept(*this);
     // FIXME: Some code was deleted here. DONE
+    for (auto& chunk : e.chunks_get())
+      chunk->accept(*this);
   }
 
   template <template <typename> class Const>
@@ -197,8 +201,8 @@ namespace ast
   void GenDefaultVisitor<Const>::operator()(const_t<FunctionDec>& e)
   {
     e.formals_get().accept(*this);
-    e.result_get().accept(*this);
-    e.body_get().accept(*this);
+    e.result_get()->accept(*this);
+    e.body_get()->accept(*this);
     // FIXME: Some code was deleted here. DONE
   }
 
@@ -221,8 +225,9 @@ namespace ast
   template <template <typename> class Const>
   void GenDefaultVisitor<Const>::operator()(const_t<RecordTy>& e)
   {
-    e.field_get().accept(*this);
     // FIXME: Some code was deleted here. DONE
+    for (auto field : e.field_get())
+      field->accept(*this);
   }
 
   template <template <typename> class Const>
