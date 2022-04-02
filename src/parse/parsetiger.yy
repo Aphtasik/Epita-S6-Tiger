@@ -195,15 +195,15 @@
 // FIXME: Some code was deleted here (More %types).
 %type <ast::FieldInit*>      field.2
 %type <ast::fieldinits_type*>field field.1
-%type <ast::exps_type*>      function
+%type <ast::exps_type*>      function function.1
 %type <ast::Var*>            lvalue
-%type <ast::exps_type*>      exps
+%type <ast::exps_type*>      exps exps.1
 
-%type <ast::Exp*>            exp function.1 exps.1
+%type <ast::Exp*>            exp
 %type <ast::ChunkList*>      chunks
 
-%type <ast::FunctionChunk*>       funchunk
-%type <ast::FunctionDec*>         fundec
+%type <ast::FunctionChunk*>  funchunk
+%type <ast::FunctionDec*>    fundec
 %type <ast::VarChunk*>       varchunk
 %type <ast::VarDec*>         vardec
 %type <ast::TypeChunk*>      tychunk
@@ -296,8 +296,7 @@ exp:
   NIL { $$ = tp.td_.make_NilExp(@$); }
   | INT { $$ = tp.td_.make_IntExp(@$, $1); }
   | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
-  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); } //TODO: next time
-  | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
+  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); } //TODO: next time | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
   | lvalue { $$ = $1; } //BUG: it's trash shit af boi
 
@@ -315,8 +314,8 @@ exp:
   | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3); }
   | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3); }
   | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3); }
-  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, false); }
-  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, true, $3); }
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); } //BUG: it's trash shit af boi
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); } //BUG: it's trash shit af boi
 
   | LPAREN exps RPAREN { $$ = tp.td_.make_SeqExp(@$, $2); }
 
@@ -325,9 +324,9 @@ exp:
   | IF exp THEN exp { $$ = tp.td_.make_IfExp(@$, $2, $4); }
   | IF exp THEN exp ELSE exp { $$ = tp.td_.make_IfExp(@$, $2, $4, $6); }
   | WHILE exp DO exp  { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
-  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
+  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@$, $2), $4), $6, $8); }
   | BREAK { $$ = tp.td_.make_BreakExp(@$); }
-  | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, $4); }
+  | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$, $4)); }
   ;
 
   // FIXME: Some code was deleted here (More rules). 
@@ -358,7 +357,7 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
-| IMPORT    STRING        { $$ = $2; $$->push_front(parse::parse_import($2)); } //BUG: might be wrong
+| IMPORT    STRING        { $$ = $2; $$->push_front(parse::TigerParser::parse_import($2, @$)); } //BUG: might be wrong
   // FIXME: Some code was deleted here (More rules).
 ;
 
@@ -395,8 +394,8 @@ vardec:
 tychunk:
   /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
      shift-reduce conflict. */
-  tydec %prec CHUNKS  { $$ = tp.td_.make_TypeChunk(@1); $$->push_front(*$1); }
-| tydec tychunk       { $$ = $2; $$->push_front(*$1); }
+  tydec %prec CHUNKS  { $$ = tp.td_.make_TypeChunk(@1); $$->emplace_back(*$1); }
+| tydec tychunk       { $$ = $2; $$->emplace_back(*$1); }
 ;
 
 tydec:
