@@ -357,7 +357,7 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
-| IMPORT    STRING        { $$ = $2; $$->push_front(parse::TigerParser::parse_import($2, @$)); } //BUG: might be wrong
+| IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); } //BUG: might be wrong
   // FIXME: Some code was deleted here (More rules).
 ;
 
@@ -372,11 +372,11 @@ funchunk:
 | fundec funchunk       { $$ = $2; $$->push_front(*$1); }
 ;
 
-fundec:
-  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $7, $9); }
-| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_VarDec(@$, $2, $4, tp.td_.make_NameTy(@2, $2), $7); }
-| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_VarDec(@$, $2, $4, tp.td_.make_NameTy(@2, $2), tp.td_.make_exps_type()); }
-| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_VarDec(@$, $2, $4, $7, tp.td_.make_exps_type()); }
+fundec: //BUG: si ca bug pas woulah je suis dieu
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@$, $2), $9); }
+| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), $7); }
+| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), tp.td_.make_NilExp(@$)); }
+| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), tp.td_.make_NilExp(@$)); }
 ;
 
 varchunk:
