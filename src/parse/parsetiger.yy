@@ -15,7 +15,7 @@
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
   // FIXME: Some code was deleted here (Other directives). DONE
-%expect 1
+%expect 0 //TODO: change this
 %expect-rr 0
 
 %define parse.error verbose
@@ -78,6 +78,30 @@
 %token <int>            INT    "integer"
 
 
+/*--------------------------------.
+| Support for the non-terminals.  |
+`--------------------------------*/
+
+%code requires
+{
+# include <ast/fwd.hh>
+// Provide the declarations of the following classes for the
+// %destructor clauses below to work properly.
+# include <ast/exp.hh>
+# include <ast/var.hh>
+# include <ast/ty.hh>
+# include <ast/name-ty.hh>
+# include <ast/field.hh>
+# include <ast/field-init.hh>
+# include <ast/function-dec.hh>
+# include <ast/type-dec.hh>
+# include <ast/var-dec.hh>
+# include <ast/chunk.hh>
+# include <ast/chunk-list.hh>
+}
+
+  // FIXME: Some code was deleted here (Printers and destructors).
+
 
 /*-----------------------------------------.
 | Code output in the implementation file.  |
@@ -89,6 +113,9 @@
 # include <parse/tweast.hh>
 # include <misc/separator.hh>
 # include <misc/symbol.hh>
+# include <ast/all.hh>
+# include <ast/libast.hh>
+# include <parse/tiger-driver.hh>
 
   namespace
   {
@@ -164,6 +191,30 @@
        EOF 0        "end of file"
 
 
+//TODO: Section avec val par defauts, a changer
+// FIXME: Some code was deleted here (More %types).
+%type <ast::FieldInit*>      field.2
+%type <ast::fieldinits_type*>field field.1
+%type <ast::exps_type*>      function function.1
+%type <ast::Var*>            lvalue
+%type <ast::exps_type*>      exps exps.1
+
+%type <ast::Exp*>            exp
+%type <ast::ChunkList*>      chunks
+
+%type <ast::FunctionChunk*>  funchunk
+%type <ast::FunctionDec*>    fundec
+%type <ast::VarChunk*>       varchunk
+%type <ast::VarDec*>         vardec
+%type <ast::TypeChunk*>      tychunk
+%type <ast::TypeDec*>        tydec
+%type <ast::NameTy*>         typeid
+%type <ast::Ty*>             ty
+
+%type <ast::Field*>          tyfield
+%type <ast::fields_type*>    tyfields tyfields.1
+
+%destructor { printf("destruct exps"); } <ast::exps_type*>
   // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
   %precedence THEN
@@ -171,6 +222,9 @@
   %precedence DO
   %precedence OF
   %precedence ASSIGN
+  %precedence LBRACK
+  %precedence ID
+
   %left OR
   %left AND
   %left LE LT NE EQ GT GE
@@ -185,6 +239,11 @@
 // We want the latter.
 %precedence CHUNKS
 %precedence TYPE
+%precedence FUNCTION
+%precedence VAR
+%precedence PRIMITIVE
+
+
   // FIXME: Some code was deleted here (Other declarations).
 
 %start program
@@ -193,92 +252,90 @@
 program:
   /* Parsing a source program.  */
   exp
-   
+   { tp.ast_ = $1; }
 | /* Parsing an imported file.  */
   chunks
-   
+   { tp.ast_ = $1; }
 ;
+
+function: 
+    %empty { $$ = tp.td_.make_exps_type(); }
+|   function.1 { $$ = $1; }
+;
+
+function.1:
+    function.1 COMMA exp { $$ = $1; $$->emplace_back($3); }
+|   exp  { $$->emplace_back($1); }
+;
+
 
 exps :
-%empty
-| rule1
+    %empty { $$ = tp.td_.make_exps_type(); }
+|   exps.1 { $$ = $1; }
 ;
 
-rule1:
- exp
- | exp SEMI rule1
- ;
+exps.1:
+    exps.1 SEMI exp { $$ = $1; $$->emplace_back($3); }
+|   exp { $$->emplace_back($1); }
+;
 
-rule32:
-%empty
-| COMMA ID EQ exp rule32
+field: 
+%empty { $$ = tp.td_.make_fieldinits_type(); }
+| field.1 { $$ = $1; }
+;
 
+field.1:
+    field.1 COMMA field.2 { $$ = $1; $$->emplace_back($3); }
+|   field.2  { $$ = tp.td_.make_fieldinits_type($1); }
+;
 
-rule31:
-%empty
-| ID EQ exp rule32
-
+field.2:
+    ID EQ exp { $$ = tp.td_.make_FieldInit(@$, $1, $3); }
 
 exp:
-  NIL
-  | INT
-  | STRING
-  | ID LBRACK exp RBRACK OF exp
-  | typeid LBRACE rule31 RBRACE
+  NIL { $$ = tp.td_.make_NilExp(@$); }
+  | INT { $$ = tp.td_.make_IntExp(@$, $1); }
+  | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
+  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); } //TODO: next time | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
 
-  | lvalue
+  | lvalue { $$ = $1; } //BUG: it's trash shit af boi
 
-  | ID LPAREN rule21 RPAREN
+  | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
-  | MINUS exp
-  //| exp op exp
+  | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpExp::Oper::sub, $2); }
 
-  | exp PLUS exp
-  | exp MINUS exp
-  | exp TIMES exp
-  | exp DIVIDE exp
-  | exp EQ exp
-  | exp NE exp
-  | exp GT exp
-  | exp LT exp
-  | exp GE exp
-  | exp LE exp
-  | exp AND exp
-  | exp OR exp
+  | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3); }
+  | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3); }
+  | exp TIMES exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::mul, $3); }
+  | exp DIVIDE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::div, $3); }
+  | exp EQ exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::eq, $3); }
+  | exp NE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ne, $3); }
+  | exp GT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::gt, $3); }
+  | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3); }
+  | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3); }
+  | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3); }
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); } //BUG: it's trash shit af boi
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); } //BUG: it's trash shit af boi
 
-  | LPAREN exps RPAREN
+  | LPAREN exps RPAREN { $$ = tp.td_.make_SeqExp(@$, $2); }
 
-  | lvalue ASSIGN exp
+  | lvalue ASSIGN exp { $$ = tp.td_.make_AssignExp(@$, $1, $3); }
 
-  | IF exp THEN exp
-  | IF exp THEN exp ELSE exp
-  | WHILE exp DO exp
-  | FOR ID ASSIGN exp TO exp DO exp
-  | BREAK
-  | LET chunks IN exps END
+  | IF exp THEN exp { $$ = tp.td_.make_IfExp(@$, $2, $4); }
+  | IF exp THEN exp ELSE exp { $$ = tp.td_.make_IfExp(@$, $2, $4, $6); }
+  | WHILE exp DO exp  { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
+  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@$, $2), $4), $6, $8); }
+  | BREAK { $$ = tp.td_.make_BreakExp(@$); }
+  | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$, $4)); }
   ;
-  // FIXME: Some code was deleted here (More rules). DONE
 
-rule21 :
-%empty
-  | rule22
-;
-
-rule22 :
-  exp
-  | exp COMMA rule22
-;
+  // FIXME: Some code was deleted here (More rules). 
 
 lvalue:
-  ID
-  | lvalue DOT ID
-  | lvalue LBRACK exp RBRACK
+  ID { $$ = tp.td_.make_SimpleVar(@$, $1); }
+  | lvalue DOT ID { $$ = tp.td_.make_FieldVar(@$, $1, $3); }
+  | lvalue LBRACK exp RBRACK { $$ = tp.td_.make_SubscriptVar(@$, $1, $3); }
   ;
-
-/*%token OP "_op";
-op:
-  PLUS | MINUS | TIMES | DIVIDE | EQ | NE | GT | LT | GE | LE | AND | OR ;
-*/
 
 /*---------------.
 | Declarations.  |
@@ -295,68 +352,82 @@ chunks:
             ..
         end
      which is why we end the recursion with a %empty. */
-  %empty                  
-| tychunk   chunks
-| vardec    chunks
-| fundec    chunks
-| IMPORT STRING
-  // FIXME: Some code was deleted here (More rules). DONE
+
+  %empty                  { $$ = tp.td_.make_ChunkList(@$); }
+| tychunk   chunks        { $$ = $2; $$->push_front($1); }
+| varchunk  chunks        { $$ = $2; $$->push_front($1); }
+| funchunk  chunks        { $$ = $2; $$->push_front($1); }
+| IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); } //BUG: might be wrong
+  // FIXME: Some code was deleted here (More rules).
 ;
 
 /*--------------------.
 | Type Declarations.  |
 `--------------------*/
 
-fundec:
-  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp
-| FUNCTION ID LPAREN tyfields RPAREN EQ exp
-| PRIMITIVE ID LPAREN tyfields RPAREN
-| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid
+funchunk:
+  /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
+     shift-reduce conflict. */
+  fundec %prec CHUNKS  { $$ = tp.td_.make_FunctionChunk(@1); $$->push_front(*$1); }
+| fundec funchunk       { $$ = $2; $$->push_front(*$1); }
 ;
 
+fundec: //BUG: si ca bug pas woulah je suis dieu
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@$, $2), $9); }
+| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), $7); }
+| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), tp.td_.make_NilExp(@$)); }
+| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), tp.td_.make_NilExp(@$)); }
+;
 
+varchunk:
+  /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
+     shift-reduce conflict. */
+  vardec %prec CHUNKS  { $$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1); }
+| vardec varchunk       { $$ = $2; $$->push_front(*$1); }
+;
 
 vardec:
-  VAR ID COLON typeid ASSIGN exp
-| VAR ID ASSIGN exp
+  VAR ID COLON typeid ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, $4, $6); }
+| VAR ID ASSIGN exp { $$ = tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@2, $2), $4); } 
+;
 
 tychunk:
   /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
      shift-reduce conflict. */
-  tydec %prec CHUNKS  
-| tydec tychunk       
+  tydec %prec CHUNKS  { $$ = tp.td_.make_TypeChunk(@1); $$->emplace_back(*$1); }
+| tydec tychunk       { $$ = $2; $$->emplace_back(*$1); }
 ;
 
 tydec:
-  "type" ID "=" ty 
+  "type" ID "=" ty { $$ = tp.td_.make_TypeDec(@$, $2, $4); }
 ;
 
 ty:
-  typeid               
-| "{" tyfields "}"     
-| "array" "of" typeid  
+  typeid               { $$ = $1; }
+| "{" tyfields "}"     { $$ = tp.td_.make_RecordTy(@$, $2); }
+| "array" "of" typeid  { $$ = tp.td_.make_ArrayTy(@$, $3); }
 ;
 
 tyfields:
-  %empty               
-| tyfields.1           
+  %empty               { $$ = tp.td_.make_fields_type(); }
+| tyfields.1           { $$ = $1; }
 ;
 
 tyfields.1:
-  tyfields.1 "," tyfield 
-| tyfield                
+  tyfields.1 "," tyfield { $$ = $1; $$->emplace_back($3); }
+| tyfield                { $$ = tp.td_.make_fields_type($1); }
 ;
 
 tyfield:
-  ID ":" typeid     
+  ID ":" typeid     { $$ = tp.td_.make_Field(@$, $1, $3); }
 ;
 
 %token NAMETY "_namety";
 typeid:
-  ID                    
+  ID                    { $$ = tp.td_.make_NameTy(@$, $1); }
   /* This is a metavariable. It it used internally by TWEASTs to retrieve
      already parsed nodes when given an input to parse. */
-| NAMETY "(" INT ")"    
+| NAMETY "(" INT ")"    { $$ = metavar<ast::NameTy>(tp, $3); }
 ;
 
 %%

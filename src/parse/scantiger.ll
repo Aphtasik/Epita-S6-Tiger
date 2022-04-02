@@ -1,4 +1,4 @@
-                                                            /* -*- C++ -*- */
+/* -*- C++ -*- */
 %option c++
 %option nounput
 %option debug
@@ -61,7 +61,7 @@ ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)
 EOL             (\n\r|\r\n|\n|\r)
 BACKSLASH       \\[^\\abfnrtv]
 
-  /* FIXME: Some code was deleted here. */
+/* FIXME: Some code was deleted here. */
 %%
 %{
   // FIXME: Some code was deleted here (Local variables).
