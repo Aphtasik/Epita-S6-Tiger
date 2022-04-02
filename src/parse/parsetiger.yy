@@ -265,7 +265,7 @@ function:
 
 function.1:
     function.1 COMMA exp { $$ = $1; $$->emplace_back($3); }
-|   exp  { $$->emplace_back($1); }
+|   exp  { $$ = tp.td_.make_exps_type($1); }
 ;
 
 
@@ -276,7 +276,7 @@ exps :
 
 exps.1:
     exps.1 SEMI exp { $$ = $1; $$->emplace_back($3); }
-|   exp { $$->emplace_back($1); }
+|   exp { $$ = tp.td_.make_exps_type($1); }
 ;
 
 field: 

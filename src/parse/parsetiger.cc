@@ -3320,7 +3320,7 @@ namespace parse
 
   case 7: // function.1: exp
 #line 268 "parse/parsetiger.yy"
-         { (*yyvalp).as < ast::exps_type* > ()->emplace_back((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
+         { (*yyvalp).as < ast::exps_type* > () = tp.td_.make_exps_type((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
 #line 3325 "parse/parsetiger.cc"
     break;
 
@@ -3344,7 +3344,7 @@ namespace parse
 
   case 11: // exps.1: exp
 #line 279 "parse/parsetiger.yy"
-        { (*yyvalp).as < ast::exps_type* > ()->emplace_back((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
+        { (*yyvalp).as < ast::exps_type* > () = tp.td_.make_exps_type((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
 #line 3349 "parse/parsetiger.cc"
     break;
 
