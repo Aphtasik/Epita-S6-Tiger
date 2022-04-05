@@ -170,11 +170,11 @@ BACKSLASH       \\[^\\abfnrtv]
 ":="	    { return TOKEN(ASSIGN); }
 
 
-"array"       { return TOKEN(ARRAY); }
-"if"          { return TOKEN(IF); }
-"then"        { return TOKEN(THEN); }
-"else"        { return TOKEN(ELSE); }
-"while"       { return TOKEN(WHILE); }
+"array"     { return TOKEN(ARRAY); }
+"if"        { return TOKEN(IF); }
+"then"      { return TOKEN(THEN); }
+"else"      { return TOKEN(ELSE); }
+"while"     { return TOKEN(WHILE); }
 "for"  	    { return TOKEN(FOR); }
 "to"  	    { return TOKEN(TO); }
 "do"  	    { return TOKEN(DO); }
@@ -182,18 +182,23 @@ BACKSLASH       \\[^\\abfnrtv]
 "in"  	    { return TOKEN(IN); }
 "end"  	    { return TOKEN(END); }
 "of"  	    { return TOKEN(OF); }
-"break"  	    { return TOKEN(BREAK); }
+"break"  	{ return TOKEN(BREAK); }
 "nil"  	    { return TOKEN(NIL); }
-"function"    { return TOKEN(FUNCTION); }
-"var"         { return TOKEN(VAR); }
-"type"        { return TOKEN(TYPE); }
-"import"      { return TOKEN(IMPORT); }
-"primitive"   { return TOKEN(PRIMITIVE); }
+"function"  { return TOKEN(FUNCTION); }
+"var"       { return TOKEN(VAR); }
+"type"      { return TOKEN(TYPE); }
+"import"    { return TOKEN(IMPORT); }
+"primitive" { return TOKEN(PRIMITIVE); }
 
-"class"         { return TOKEN(CLASS); }
-"extends"         { return TOKEN(EXTENDS); }
-"method"         { return TOKEN(METHOD); }
-"new"         { return TOKEN(NEW); }
+"class"     { return TOKEN(CLASS); }
+"extends"   { return TOKEN(EXTENDS); }
+"method"    { return TOKEN(METHOD); }
+"new"       { return TOKEN(NEW); }
+
+"_chunks"   { return TOKEN(CHUNKS); }
+"_exp"      { return TOKEN(EXP); }
+"_lvalue"     { return TOKEN(LVALUE); }
+"_namety"   { return TOKEN(NAMETY); }
 
 {int}       {
     int val = 0;
@@ -218,7 +223,7 @@ BACKSLASH       \\[^\\abfnrtv]
 
 {RESERVED}  {
     misc::symbol symbol(yytext);
-    return TOKEN_VAL(ID, symbol);
+    return TOKEN_VAL(RESERVED, symbol);
             }
 
 {ID}        {
