@@ -292,6 +292,7 @@ field.1:
 field.2:
     ID EQ exp { $$ = tp.td_.make_FieldInit(@$, $1, $3); }
 
+%token EXP "_exp";
 exp:
   NIL { $$ = tp.td_.make_NilExp(@$); }
   | INT { $$ = tp.td_.make_IntExp(@$, $1); }
@@ -327,14 +328,16 @@ exp:
   | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@$, $2), $4), $6, $8); }
   | BREAK { $$ = tp.td_.make_BreakExp(@$); }
   | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$, $4)); }
+  | EXP LPAREN INT RPAREN { $$ = metavar<ast::Exp>(tp, $3); }
   ;
 
   // FIXME: Some code was deleted here (More rules). 
-
+%token LVALUE "_lvalue";
 lvalue:
   ID { $$ = tp.td_.make_SimpleVar(@$, $1); }
   | lvalue DOT ID { $$ = tp.td_.make_FieldVar(@$, $1, $3); }
   | lvalue LBRACK exp RBRACK { $$ = tp.td_.make_SubscriptVar(@$, $1, $3); }
+  | LVALUE LPAREN INT RPAREN { $$ = metavar<ast::Var>(tp, $3); }
   ;
 
 /*---------------.
@@ -358,6 +361,7 @@ chunks:
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
 | IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); } //BUG: might be wrong
+| CHUNKS LPAREN INT RPAREN chunks { $$ = metavar<ast::ChunkList>(tp, $3); }
   // FIXME: Some code was deleted here (More rules).
 ;
 
