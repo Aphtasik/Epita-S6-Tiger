@@ -82,7 +82,7 @@
 | Support for the non-terminals.  |
 `--------------------------------*/
 
-%code requires
+%code require
 {
 # include <ast/fwd.hh>
 // Provide the declarations of the following classes for the
@@ -197,7 +197,9 @@
 %type <ast::fieldinits_type*>field field.1
 %type <ast::exps_type*>      function function.1
 %type <ast::Var*>            lvalue
-%type <ast::exps_type*>      exps exps.1
+%type <ast::exps_type*>      exps.1
+// TODO: test to make exps a SeqExp
+%type <ast::SeqExp*>         exps
 
 %type <ast::Exp*>            exp
 %type <ast::ChunkList*>      chunks
@@ -259,8 +261,8 @@ program:
 ;
 
 function: 
-    %empty { $$ = tp.td_.make_exps_type(); }
-|   function.1 { $$ = $1; }
+    %empty { $$ = tp.td_.make_SeqExp(tp.td_.make_exps_type()); }
+|   function.1 { $$ = tp.td_.make_SeqExp($1); }
 ;
 
 function.1:
@@ -270,8 +272,8 @@ function.1:
 
 
 exps :
-    %empty { $$ = tp.td_.make_exps_type(); }
-|   exps.1 { $$ = $1; }
+    %empty { $$ = tp.td_.make_SeqExp(tp.td_.make_exps_type()); }
+|   exps.1 { $$ = tp.td_.make_SeqExp($1); }
 ;
 
 exps.1:
@@ -279,7 +281,7 @@ exps.1:
 |   exp { $$ = tp.td_.make_exps_type($1); }
 ;
 
-field: 
+field:
 %empty { $$ = tp.td_.make_fieldinits_type(); }
 | field.1 { $$ = $1; }
 ;
@@ -297,8 +299,8 @@ exp:
   NIL { $$ = tp.td_.make_NilExp(@$); }
   | INT { $$ = tp.td_.make_IntExp(@$, $1); }
   | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
-  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); } //TODO: next time | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); } //TODO: next time
-
+  | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); }
+  | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); }
   | lvalue { $$ = $1; } //BUG: it's trash shit af boi
 
   | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
@@ -318,7 +320,7 @@ exp:
   | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); } //BUG: it's trash shit af boi
   | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); } //BUG: it's trash shit af boi
 
-  | LPAREN exps RPAREN { $$ = tp.td_.make_SeqExp(@$, $2); }
+  | LPAREN exps RPAREN { $$ = $2; }
 
   | lvalue ASSIGN exp { $$ = tp.td_.make_AssignExp(@$, $1, $3); }
 
@@ -327,7 +329,7 @@ exp:
   | WHILE exp DO exp  { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
   | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@$, $2), $4), $6, $8); }
   | BREAK { $$ = tp.td_.make_BreakExp(@$); }
-  | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, tp.td_.make_SeqExp(@$, $4)); }
+  | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, $4); }
   | EXP LPAREN INT RPAREN { $$ = metavar<ast::Exp>(tp, $3); }
   ;
 
