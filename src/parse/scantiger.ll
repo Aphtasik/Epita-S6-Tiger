@@ -58,6 +58,7 @@ YY_FLEX_NAMESPACE_BEGIN
 int             [0-9]+
 SPACE           [ \t]
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
+RESERVED        _([a-zA-Z]|[0-9]|_)*
 EOL             (\n\r|\r\n|\n|\r)
 NUM             \\[0-3][0-7][0-7]
 XNUM            \\x[0-7][0-9A-F]
@@ -214,6 +215,11 @@ BACKSLASH       \\[^\\abfnrtv]
     continue;
             }
 {EOL}       { tp.location_.lines(yyleng); }
+
+{RESERVED}  {
+    misc::symbol symbol(yytext);
+    return TOKEN_VAL(ID, symbol);
+            }
 
 {ID}        {
     misc::symbol symbol(yytext);
