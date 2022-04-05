@@ -82,7 +82,7 @@
 | Support for the non-terminals.  |
 `--------------------------------*/
 
-%code require
+%code requires
 {
 # include <ast/fwd.hh>
 // Provide the declarations of the following classes for the
@@ -261,8 +261,8 @@ program:
 ;
 
 function: 
-    %empty { $$ = tp.td_.make_SeqExp(tp.td_.make_exps_type()); }
-|   function.1 { $$ = tp.td_.make_SeqExp($1); }
+    %empty { $$ = tp.td_.make_exps_type(); }
+|   function.1 { $$ = $1; }
 ;
 
 function.1:
@@ -272,8 +272,8 @@ function.1:
 
 
 exps :
-    %empty { $$ = tp.td_.make_SeqExp(tp.td_.make_exps_type()); }
-|   exps.1 { $$ = tp.td_.make_SeqExp($1); }
+    %empty { $$ = tp.td_.make_SeqExp(@$, tp.td_.make_exps_type()); }
+|   exps.1 { $$ = tp.td_.make_SeqExp(@$, $1); }
 ;
 
 exps.1:
