@@ -379,10 +379,10 @@ funchunk:
 ;
 
 fundec: //BUG: si ca bug pas woulah je suis dieu
-  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@$, $2), $9); }
-| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), $7); }
-| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), tp.td_.make_NilExp(@$)); }
-| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), tp.td_.make_NameTy(@2, $2), tp.td_.make_NilExp(@$)); }
+  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), $7, $9); }
+| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), nullptr, $7); }
+| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), nullptr, nullptr); }
+| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), $7, nullptr); }
 ;
 
 varchunk:

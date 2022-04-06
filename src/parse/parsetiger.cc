@@ -3766,25 +3766,25 @@ namespace parse
 
   case 58: // fundec: "function" "identifier" "(" tyfields ")" ":" typeid "=" exp
 #line 382 "parse/parsetiger.yy"
-                                                         { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-7)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().yyloc)), tp.td_.make_NameTy((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-7)].getState().value ().as < misc::symbol > ()), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
+                                                         { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-7)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().yyloc)), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-2)].getState().value ().as < ast::NameTy* > (), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
 #line 3771 "parse/parsetiger.cc"
     break;
 
   case 59: // fundec: "function" "identifier" "(" tyfields ")" "=" exp
 #line 383 "parse/parsetiger.yy"
-                                            { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().yyloc)), tp.td_.make_NameTy(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().yyloc), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().value ().as < misc::symbol > ()), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
+                                            { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().yyloc)), nullptr, (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::Exp* > ()); }
 #line 3777 "parse/parsetiger.cc"
     break;
 
   case 60: // fundec: "primitive" "identifier" "(" tyfields ")"
 #line 384 "parse/parsetiger.yy"
-                                      { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().yyloc)), tp.td_.make_NameTy(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().yyloc), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().value ().as < misc::symbol > ()), tp.td_.make_NilExp((*yylocp))); }
+                                      { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().yyloc)), nullptr, nullptr); }
 #line 3783 "parse/parsetiger.cc"
     break;
 
   case 61: // fundec: "primitive" "identifier" "(" tyfields ")" ":" typeid
 #line 385 "parse/parsetiger.yy"
-                                                   { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().yyloc)), tp.td_.make_NameTy(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().yyloc), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().value ().as < misc::symbol > ()), tp.td_.make_NilExp((*yylocp))); }
+                                                   { (*yyvalp).as < ast::FunctionDec* > () = tp.td_.make_FunctionDec((*yylocp), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-5)].getState().value ().as < misc::symbol > (), tp.td_.make_VarChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-3)].getState().yyloc)), (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::NameTy* > (), nullptr); }
 #line 3789 "parse/parsetiger.cc"
     break;
 

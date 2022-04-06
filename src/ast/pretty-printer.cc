@@ -54,11 +54,17 @@ namespace ast
   // FIXME: Some code was deleted here.
   void PrettyPrinter::operator()(const FunctionDec& e)
   {
-    ostr_ << "function " << e.name_get() << '(' << e.formals_get() << ")";
+    if (e.body_get() == nullptr)
+      ostr_ << "primitive ";
+    else
+      ostr_ << "function ";
+    ostr_ << e.name_get() << '(' << e.formals_get() << ")";
     if (e.result_get() != nullptr)
-      ostr_ << " : " << e.result_get();
-    ostr_ << " =" << misc::incendl << "(" << misc::incendl << e.body_get()
-          << misc::decendl << ')' << misc::decendl;
+      ostr_ << " : " << e.result_get()->name_get();
+    if (e.body_get() != nullptr)
+      ostr_ << " =" << misc::incendl << "(" << misc::incendl << e.body_get()
+            << misc::decendl << ')' << misc::decindent;
+    ostr_ << misc::iendl;
   }
   void PrettyPrinter::operator()(const MethodDec& e) {} //TODO
 
