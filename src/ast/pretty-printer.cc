@@ -31,7 +31,12 @@ namespace ast
     : ostr_(ostr)
   {}
 
-  void PrettyPrinter::operator()(const SimpleVar& e) { ostr_ << e.name_get(); }
+  void PrettyPrinter::operator()(const SimpleVar& e)
+  {
+    ostr_ << e.name_get();
+    if (e.def_get() != nullptr)
+      ostr_ << " : " << e.def_get()->name_get();
+  }
 
   void PrettyPrinter::operator()(const FieldVar& e)
   {
@@ -62,10 +67,9 @@ namespace ast
     if (e.result_get() != nullptr)
       ostr_ << " : " << e.result_get()->name_get();
     if (e.body_get() != nullptr)
-      ostr_ << " =" << misc::incendl << "(" << misc::incendl << e.body_get()
-            << misc::decendl << ')' << misc::decindent;
-    ostr_ << misc::iendl;
+      ostr_ << " =" << misc::incendl << "(" << *e.body_get() << ')';
   }
+
   void PrettyPrinter::operator()(const MethodDec& e) {} //TODO
 
   void PrettyPrinter::operator()(const TypeDec& e)
@@ -85,14 +89,17 @@ namespace ast
   {
     ostr_ << e.var_get() << " := " << e.exp_get() << misc::iendl;
   }
-  void PrettyPrinter::operator()(const BreakExp& e) { ostr_ << "break" << misc::iendl ; }
+  void PrettyPrinter::operator()(const BreakExp& e)
+  {
+    ostr_ << "break" << misc::iendl;
+  }
   void PrettyPrinter::operator()(const CallExp& e)
   {
     ostr_ << e.name_get() << "(";
     auto x = e.exps_get();
     for (size_t i = 0; i < x.size() - 1; i++)
-      ostr_ << x.at(i) << ", ";
-    ostr_ << x.at(x.size() - 1) << ")" << misc::iendl;
+      ostr_ << *x.at(i) << ", ";
+    ostr_ << *x.at(x.size() - 1) << ")";
   }
   void PrettyPrinter::operator()(const MethodCallExp& e) {} //TODO
   void PrettyPrinter::operator()(const ForExp& e)
@@ -102,16 +109,16 @@ namespace ast
   }
   void PrettyPrinter::operator()(const IfExp& e)
   {
-    ostr_ << "if (" << *e.test_get() << ") then"
-          << misc::incendl << *e.thenclause_get() << misc::decendl;
+    ostr_ << "if (" << *e.test_get() << ")" << misc::incendl << "then "
+          << *e.thenclause_get() << misc::decendl;
     if (e.elseclause_get())
-        ostr_ << "else" << misc::incendl << *e.elseclause_get() << misc::decendl;
+      ostr_ << "else (" << *e.elseclause_get() << ")";
   }
   void PrettyPrinter::operator()(const IntExp& e) { ostr_ << e.value_get(); }
   void PrettyPrinter::operator()(const LetExp& e)
   {
-    ostr_ << "let " << e.chunklist_get() << " in " << e.exp_get() << " end"
-          << misc::iendl;
+    ostr_ << "let" << misc::incendl << e.chunklist_get() <<  misc::iendl << "in " << e.exp_get() << "end"
+          << misc::decendl;
   }
   void PrettyPrinter::operator()(const NilExp& e) { ostr_ << "nil"; }
   void PrettyPrinter::operator()(const ObjectExp& e) {} //TODO
@@ -167,18 +174,18 @@ namespace ast
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
-    ostr_ << "(" << misc::incendl;
+    ostr_ << misc::incendl;
     auto x = e.exps_get();
     for (size_t i = 0; i < x.size() - 1; i++)
-      ostr_ << x.at(i) << ";" << misc::iendl;
-    ostr_ << x.at(x.size() - 1) << misc::decendl<< ")" ;
+      ostr_ << *x.at(i) << ";";
+    ostr_ << misc::decendl;
   }
 
   void PrettyPrinter::operator()(const StringExp& e) { ostr_ << e.name_get(); }
   void PrettyPrinter::operator()(const WhileExp& e)
   {
-    ostr_ << "while " << e.test_get() << " do" << misc::incendl
-          << e.body_get() << misc::decendl;
+    ostr_ << "while " << e.test_get() << " do" << misc::incendl << e.body_get()
+          << misc::decendl;
   }
 
   void PrettyPrinter::operator()(const ArrayTy& e)
@@ -186,8 +193,11 @@ namespace ast
     ostr_ << "array of " << e.base_type_get();
   }
   void PrettyPrinter::operator()(const ClassTy& e) {} //TODO
-  void PrettyPrinter::operator()(const NameTy& e) {
+  void PrettyPrinter::operator()(const NameTy& e)
+  {
     ostr_ << e.name_get();
+    if (e.def_get() != nullptr)
+      ostr_ << " : " << e.def_get()->name_get();
   }
   void PrettyPrinter::operator()(const RecordTy& e)
   {
@@ -197,7 +207,8 @@ namespace ast
       ostr_ << vec.at(i) << ", ";
     ostr_ << vec.at(vec.size() - 1) << '}';
   }
-  void PrettyPrinter::operator()(const ChunkList& e) {
+  void PrettyPrinter::operator()(const ChunkList& e)
+  {
     ostr_ << misc::separate(e.chunks_get(), " ");
   }
   void PrettyPrinter::operator()(const Field& e)
