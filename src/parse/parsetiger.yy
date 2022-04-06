@@ -191,14 +191,12 @@
        EOF 0        "end of file"
 
 
-//TODO: Section avec val par defauts, a changer
 // FIXME: Some code was deleted here (More %types).
 %type <ast::FieldInit*>      field.2
 %type <ast::fieldinits_type*>field field.1
 %type <ast::exps_type*>      function function.1
 %type <ast::Var*>            lvalue
 %type <ast::exps_type*>      exps.1
-// TODO: test to make exps a SeqExp
 %type <ast::SeqExp*>         exps
 
 %type <ast::Exp*>            exp
@@ -219,19 +217,19 @@
 %destructor { printf("destruct exps"); } <ast::exps_type*>
   // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
-  %precedence THEN
-  %precedence ELSE
-  %precedence DO
-  %precedence OF
-  %precedence ASSIGN
-  %precedence LBRACK
-  %precedence ID
+%precedence THEN
+%precedence ELSE
+%precedence DO
+%precedence OF
+%precedence ASSIGN
+%precedence LBRACK
+%precedence ID
 
-  %left OR
-  %left AND
-  %left LE LT NE EQ GT GE
-  %left PLUS MINUS
-  %left TIMES DIVIDE
+%left OR
+%left AND
+%left LE LT NE EQ GT GE
+%left PLUS MINUS
+%left TIMES DIVIDE
 
 // Solving conflicts on:
 // let type foo = bar
@@ -301,7 +299,7 @@ exp:
   | STRING { $$ = tp.td_.make_StringExp(@$, $1); }
   | ID LBRACK exp RBRACK OF exp { $$ = tp.td_.make_ArrayExp(@$, tp.td_.make_NameTy(@1, $1), $3, $6); }
   | typeid LBRACE field RBRACE { $$ = tp.td_.make_RecordExp(@$, $1, $3); }
-  | lvalue { $$ = $1; } //BUG: it's trash shit af boi
+  | lvalue { $$ = $1; }
 
   | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
@@ -317,8 +315,8 @@ exp:
   | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3); }
   | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3); }
   | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3); }
-  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); } //BUG: it's trash shit af boi
-  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); } //BUG: it's trash shit af boi
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); }
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); }
 
   | LPAREN exps RPAREN { $$ = $2; }
 
@@ -362,7 +360,7 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
-| IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); } //BUG: might be wrong
+| IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); }
 | CHUNKS LPAREN INT RPAREN chunks { $$ = metavar<ast::ChunkList>(tp, $3); }
   // FIXME: Some code was deleted here (More rules).
 ;
@@ -378,7 +376,7 @@ funchunk:
 | fundec funchunk       { $$ = $2; $$->push_front(*$1); }
 ;
 
-fundec: //BUG: si ca bug pas woulah je suis dieu
+fundec: 
   FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), $7, $9); }
 | FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), nullptr, $7); }
 | PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), nullptr, nullptr); }

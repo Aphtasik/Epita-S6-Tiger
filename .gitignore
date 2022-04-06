@@ -3,6 +3,10 @@ autom4*
 configure
 config.h.in
 Makefile.in
+scantiger.cc
+scantiger.hh
+parsetiger.hh
+parsetiger.cc
 
 # IDE
 .idea
