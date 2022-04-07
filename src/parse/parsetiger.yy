@@ -214,6 +214,9 @@
 %type <ast::Field*>          tyfield
 %type <ast::fields_type*>    tyfields tyfields.1
 
+%type <ast::VarChunk*>       notatyfields notatyfields.1
+%type <ast::VarDec*>         notatyfield
+
 %destructor { printf("destruct exps"); } <ast::exps_type*>
   // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
@@ -361,7 +364,7 @@ chunks:
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
 | IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); }
-| CHUNKS LPAREN INT RPAREN chunks { $$ = metavar<ast::ChunkList>(tp, $3); }
+| CHUNKS LPAREN INT RPAREN chunks { $$ = $5; $5->splice_front(*metavar<ast::ChunkList>(tp, $3)); }
   // FIXME: Some code was deleted here (More rules).
 ;
 
@@ -377,10 +380,10 @@ funchunk:
 ;
 
 fundec: 
-  FUNCTION ID LPAREN tyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), $7, $9); }
-| FUNCTION ID LPAREN tyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), nullptr, $7); }
-| PRIMITIVE ID LPAREN tyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), nullptr, nullptr); }
-| PRIMITIVE ID LPAREN tyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, tp.td_.make_VarChunk(@4), $7, nullptr); }
+  FUNCTION ID LPAREN notatyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, $9); }
+| FUNCTION ID LPAREN notatyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, $7); }
+| PRIMITIVE ID LPAREN notatyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, nullptr); }
+| PRIMITIVE ID LPAREN notatyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, nullptr); }
 ;
 
 varchunk:
@@ -424,6 +427,20 @@ tyfields.1:
 
 tyfield:
   ID ":" typeid     { $$ = tp.td_.make_Field(@$, $1, $3); }
+;
+
+notatyfields:
+  %empty               { $$ = tp.td_.make_VarChunk(@$); }
+| notatyfields.1       { $$ = $1; }
+;
+
+notatyfields.1:
+  notatyfields.1 "," notatyfield { $$ = $1; $$->emplace_back(*$3); }
+| notatyfield    { $$ = tp.td_.make_VarChunk(@1); $$->emplace_back(*$1); }         
+;
+
+notatyfield:
+  ID ":" typeid     { $$ = tp.td_.make_VarDec(@$, $1, $3, nullptr); }
 ;
 
 %token NAMETY "_namety";

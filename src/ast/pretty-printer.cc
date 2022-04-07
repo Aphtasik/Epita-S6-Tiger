@@ -63,11 +63,18 @@ namespace ast
       ostr_ << "primitive ";
     else
       ostr_ << "function ";
-    ostr_ << e.name_get() << '(' << e.formals_get() << ")";
+
+    ostr_ << e.name_get() << "(";
+    for (auto x : e.formals_get())
+      ostr_ << *x << ", ";
+    ostr_ << ")";
+
     if (e.result_get() != nullptr)
       ostr_ << " : " << e.result_get()->name_get();
     if (e.body_get() != nullptr)
       ostr_ << " =" << misc::incendl << "(" << *e.body_get() << ')';
+    else
+      ostr_ << misc::iendl;
   }
 
   void PrettyPrinter::operator()(const MethodDec& e) {} //TODO
@@ -78,7 +85,10 @@ namespace ast
   }
   void PrettyPrinter::operator()(const VarDec& e)
   {
-    ostr_ << "var" << e.type_name_get() << ":= " << e.init_get() << misc::iendl;
+    if (e.init_get() == nullptr)
+        ostr_ << e.name_get() << " : " << e.type_name_get();
+    else
+        ostr_ << "var " << e.name_get() << " : " << e.type_name_get() << " := " << e.init_get();
   }
   void PrettyPrinter::operator()(const ArrayExp& e)
   {
