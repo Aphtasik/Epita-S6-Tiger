@@ -318,8 +318,8 @@ exp:
   | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3); }
   | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3); }
   | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3); }
-  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); }
-  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); }
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_OpExp(@$, $3, ast::OpExp::Oper::ne, tp.td_.make_IntExp(@$, 0)), tp.td_.make_IntExp(@$, 0)); }
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), tp.td_.make_OpExp(@$, $3, ast::OpExp::Oper::eq, tp.td_.make_IntExp(@$, 1))); }
 
   | LPAREN exps RPAREN { $$ = $2; }
 
@@ -328,7 +328,7 @@ exp:
   | IF exp THEN exp { $$ = tp.td_.make_IfExp(@$, $2, $4); }
   | IF exp THEN exp ELSE exp { $$ = tp.td_.make_IfExp(@$, $2, $4, $6); }
   | WHILE exp DO exp  { $$ = tp.td_.make_WhileExp(@$, $2, $4); }
-  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@$, $2, tp.td_.make_NameTy(@$, $2), $4), $6, $8); }
+  | FOR ID ASSIGN exp TO exp DO exp { $$ = tp.td_.make_ForExp(@$, tp.td_.make_VarDec(@$, $2, nullptr, $4), $6, $8); }
   | BREAK { $$ = tp.td_.make_BreakExp(@$); }
   | LET chunks IN exps END { $$ = tp.td_.make_LetExp(@$, $2, $4); }
   | EXP LPAREN INT RPAREN { $$ = metavar<ast::Exp>(tp, $3); }
