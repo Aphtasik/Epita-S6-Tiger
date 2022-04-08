@@ -66,15 +66,12 @@ namespace ast
 
     ostr_ << e.name_get() << "(";
     e.formals_get().accept(*this);
-    /*for (auto x : e.formals_get())
-      x->accept(*this);
-       // x.accept()*/
     ostr_ << ")";
 
     if (e.result_get() != nullptr)
       ostr_ << " : " << e.result_get()->name_get();
     if (e.body_get() != nullptr)
-      ostr_ << " =" << misc::incendl << "(" << *e.body_get() << ')';
+      ostr_ << " =" << misc::incendl << "(" << *e.body_get() << ")";
     else
       ostr_ << misc::iendl;
   }
@@ -121,10 +118,11 @@ namespace ast
   void PrettyPrinter::operator()(const CallExp& e)
   {
     ostr_ << e.name_get() << "(";
-    auto x = e.exps_get();
+    ostr_ << misc::separate(e.exps_get(), ", ");
+    /*auto x = e.exps_get();
     for (size_t i = 0; i < x.size() - 1; i++)
       ostr_ << *x.at(i) << ", ";
-    ostr_ << *x.at(x.size() - 1) << ")";
+    ostr_ << *x.at(x.size() - 1) << ")";*/
   }
   void PrettyPrinter::operator()(const MethodCallExp& e) {} //TODO
   void PrettyPrinter::operator()(const ForExp& e)
@@ -192,19 +190,23 @@ namespace ast
   void PrettyPrinter::operator()(const RecordExp& e)
   {
     ostr_ << e.rec_get() << "= {";
-    auto vec = e.vec_get();
+    ostr_ << misc::separate(e.vec_get(), ", ");
+    /*auto vec = e.vec_get();
     // printing each field one by one
     for (size_t i = 0; i < vec.size() - 1; i++)
       ostr_ << vec.at(i) << ", ";
     // putting the last item without the coma
-    ostr_ << *(--vec.end()) << '}' << misc::iendl;
+    ostr_ << *(--vec.end()) << '}' << misc::iendl;*/
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
+    //ostr_ << "oui";
+    if (e.exps_get().size() == 0)
+      return;
+    //ostr_ << "non";
     ostr_ << misc::incendl;
-    for (auto x : e.exps_get())
-      ostr_ << *x << ";";
+    ostr_ << misc::separate(e.exps_get(), ";");
     ostr_ << misc::decendl;
   }
 
@@ -229,10 +231,11 @@ namespace ast
   void PrettyPrinter::operator()(const RecordTy& e)
   {
     ostr_ << "{";
-    auto vec = e.field_get();
+    ostr_ << misc::separate(e.field_get(), ", ");
+    /*auto vec = e.field_get();
     for (size_t i = 0; i < vec.size() - 1; i++)
       ostr_ << vec.at(i) << ", ";
-    ostr_ << vec.at(vec.size() - 1) << '}';
+    ostr_ << vec.at(vec.size() - 1) << '}';*/
   }
   void PrettyPrinter::operator()(const ChunkList& e)
   {
