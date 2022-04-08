@@ -122,7 +122,8 @@ namespace ast
     /*auto x = e.exps_get();
     for (size_t i = 0; i < x.size() - 1; i++)
       ostr_ << *x.at(i) << ", ";
-    ostr_ << *x.at(x.size() - 1) << ")";*/
+    ostr_ << *x.at(x.size() - 1)*/
+    ostr_ << ")";
   }
   void PrettyPrinter::operator()(const MethodCallExp& e) {} //TODO
   void PrettyPrinter::operator()(const ForExp& e)
@@ -138,7 +139,7 @@ namespace ast
           << *e.thenclause_get() << misc::decendl;
     if (e.elseclause_get())
       ostr_ << "else (" << *e.elseclause_get() << ")" << misc::decindent;
-    ostr_ << misc::decindent;
+    //ostr_ << misc::decindent;
   }
   void PrettyPrinter::operator()(const IntExp& e) { ostr_ << e.value_get(); }
   void PrettyPrinter::operator()(const LetExp& e)
@@ -196,7 +197,8 @@ namespace ast
     for (size_t i = 0; i < vec.size() - 1; i++)
       ostr_ << vec.at(i) << ", ";
     // putting the last item without the coma
-    ostr_ << *(--vec.end()) << '}' << misc::iendl;*/
+    ostr_ << *(--vec.end())*/
+    ostr_ << '}' << misc::iendl;
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
@@ -235,7 +237,8 @@ namespace ast
     /*auto vec = e.field_get();
     for (size_t i = 0; i < vec.size() - 1; i++)
       ostr_ << vec.at(i) << ", ";
-    ostr_ << vec.at(vec.size() - 1) << '}';*/
+    ostr_ << vec.at(vec.size() - 1)*/
+    ostr_ << '}';
   }
   void PrettyPrinter::operator()(const ChunkList& e)
   {
