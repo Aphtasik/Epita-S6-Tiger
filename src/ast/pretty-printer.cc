@@ -129,7 +129,8 @@ namespace ast
   void PrettyPrinter::operator()(const ForExp& e)
   {
     ostr_ << "for ";
-    e.vardec_get().accept(*this);
+    ostr_ << e.vardec_get().name_get();
+    ostr_ << " := " << *e.vardec_get().init_get();
     ostr_ << " to " << e.hi_get() << " do"
           << misc::incindent << e.body_get() << misc::decindent;
   }
@@ -206,7 +207,7 @@ namespace ast
     //ostr_ << "oui";
     if (e.exps_get().size() == 0)
       {
-        ostr_ << "()";
+        ostr_ << misc::iendl << "()";
         return;
       }
     //ostr_ << "non";
