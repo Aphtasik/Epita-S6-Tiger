@@ -65,8 +65,10 @@ namespace ast
       ostr_ << "function ";
 
     ostr_ << e.name_get() << "(";
-    for (auto x : e.formals_get())
-      ostr_ << *x << ", ";
+    e.formals_get().accept(*this);
+    /*for (auto x : e.formals_get())
+      x->accept(*this);
+       // x.accept()*/
     ostr_ << ")";
 
     if (e.result_get() != nullptr)
@@ -86,9 +88,22 @@ namespace ast
   void PrettyPrinter::operator()(const VarDec& e)
   {
     if (e.init_get() == nullptr)
-        ostr_ << e.name_get() << " : " << e.type_name_get();
+      {
+        ostr_ << e.name_get();
+        if (e.type_name_get() != nullptr)
+          ostr_ << " : " << *e.type_name_get();
+      }
     else
-        ostr_ << "var " << e.name_get() << " : " << e.type_name_get() << " := " << e.init_get();
+      {
+        ostr_ << "var " << e.name_get();
+        if (e.type_name_get() != nullptr)
+          ostr_ << " : " << *e.type_name_get();
+        ostr_ << " := " << *e.init_get();
+      }
+  }
+  void PrettyPrinter::operator()(const VarChunk& e)
+  {
+    ostr_ << misc::separate(e, ", ");
   }
   void PrettyPrinter::operator()(const ArrayExp& e)
   {
@@ -114,7 +129,9 @@ namespace ast
   void PrettyPrinter::operator()(const MethodCallExp& e) {} //TODO
   void PrettyPrinter::operator()(const ForExp& e)
   {
-    ostr_ << "for " << e.vardec_get() << " to " << e.hi_get() << " do"
+    ostr_ << "for ";
+    e.vardec_get().accept(*this);
+    ostr_ << " to " << e.hi_get() << " do"
           << misc::incendl << e.body_get() << misc::decendl;
   }
   void PrettyPrinter::operator()(const IfExp& e)
@@ -122,7 +139,8 @@ namespace ast
     ostr_ << "if (" << *e.test_get() << ")" << misc::incendl << "then "
           << *e.thenclause_get() << misc::decendl;
     if (e.elseclause_get())
-      ostr_ << "else (" << *e.elseclause_get() << ")";
+      ostr_ << "else (" << *e.elseclause_get() << ")" << misc::decindent;
+    ostr_ << misc::decindent;
   }
   void PrettyPrinter::operator()(const IntExp& e) { ostr_ << e.value_get(); }
   void PrettyPrinter::operator()(const LetExp& e)
@@ -185,9 +203,8 @@ namespace ast
   void PrettyPrinter::operator()(const SeqExp& e)
   {
     ostr_ << misc::incendl;
-    auto x = e.exps_get();
-    for (size_t i = 0; i < x.size() - 1; i++)
-      ostr_ << *x.at(i) << ";";
+    for (auto x : e.exps_get())
+      ostr_ << *x << ";";
     ostr_ << misc::decendl;
   }
 

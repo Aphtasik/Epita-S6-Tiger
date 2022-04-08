@@ -34,6 +34,7 @@ namespace ast
     void operator()(const MethodDec& e) override;
     void operator()(const TypeDec& e) override;
     void operator()(const VarDec& e) override;
+    void operator()(const VarChunk& e) override;
     void operator()(const ArrayExp& e) override;
     void operator()(const AssignExp& e) override;
     void operator()(const BreakExp& e) override;
