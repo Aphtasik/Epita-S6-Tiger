@@ -225,6 +225,13 @@ BACKSLASH       \\[^\\abfnrtv]
     return TOKEN_VAL(ID, symbol);
             }
 
+{XNUMBER}           {
+      tp.error_ << misc::error::error_type::scan        \
+                << tp.location_                         \
+                << ": invalid identifier: `"            \
+                << misc::escape(yytext) << "'\n";       \
+                }
+
 <<eof>>     { return TOKEN(EOF); }
 .           {
     tp.error_ << misc::error::error_type::scan        \
