@@ -57,6 +57,7 @@ YY_FLEX_NAMESPACE_BEGIN
 /* Abbreviations.  */
 int             [0-9]+
 SPACE           [ \t]
+XNUMBER         \\x[0-7][0-9A-F]
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
 EOL             (\n\r|\r\n|\n|\r)
 NUM             \\[0-3][0-7][0-7]
@@ -99,6 +100,7 @@ BACKSLASH       \\[^\\abfnrtv]
 
 "\""            {
         dynamic_string.clear();
+        dynamic_string += yytext;
         BEGIN(SC_STRING);
                 }
 <SC_STRING>{
@@ -108,18 +110,15 @@ BACKSLASH       \\[^\\abfnrtv]
                 << ": unexpected end of file in a string\n";            \
                 BEGIN(INITIAL);
                 }
-{NUM}           {
-            dynamic_string += strtol(yytext + 1, 0, 8);
+
+{EOL}           {
+        tp.location_.lines(yyleng); tp.location_.step();
                 }
-{XNUM}          {
-            dynamic_string += strtol(yytext + 2, 0, 16);
+
+{XNUMBER}       {
+        dynamic_string += strtol(yytext + 2, 0, 16);
                 }
-"\\,"           {
-        tp.error_ << misc::error::error_type::scan        \
-                << tp.location_                         \
-                << ": unexpected end of file in a string\n";            \
-                BEGIN(INITIAL);
-                }
+
 "\\\""          {
         dynamic_string += yytext;
                 }
@@ -127,6 +126,7 @@ BACKSLASH       \\[^\\abfnrtv]
         dynamic_string += yytext;
                 }
 "\""            {
+        dynamic_string += yytext;
         BEGIN(INITIAL);
         return TOKEN_VAL(STRING, dynamic_string);
                 }
