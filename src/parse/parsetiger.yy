@@ -306,7 +306,7 @@ exp:
 
   | ID LPAREN function RPAREN { $$ = tp.td_.make_CallExp(@$, $1, $3); } 
 
-  | MINUS exp { $$ = tp.td_.make_OpExp(@$, 0, ast::OpExp::Oper::sub, $2); }
+  | MINUS exp { $$ = tp.td_.make_OpExp(@$, tp.td_.make_IntExp(@$, 0), ast::OpExp::Oper::sub, $2); }
 
   | exp PLUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::add, $3); }
   | exp MINUS exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::sub, $3); }
