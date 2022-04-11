@@ -15,7 +15,7 @@
 // In TC, we expect the GLR to resolve one Shift-Reduce and zero Reduce-Reduce
 // conflict at runtime. Use %expect and %expect-rr to tell Bison about it.
   // FIXME: Some code was deleted here (Other directives). DONE
-%expect 0 //TODO: change this
+%expect 1 //TODO: change this
 %expect-rr 0
 
 %define parse.error verbose
@@ -220,17 +220,14 @@
 %destructor { printf("destruct exps"); } <ast::exps_type*>
   // FIXME: Some code was deleted here (Priorities/associativities). DONE
 
-%precedence THEN
+%precedence THEN OF
 %precedence ELSE
 %precedence DO
-%precedence OF
 %precedence ASSIGN
-%precedence LBRACK
-%precedence ID
 
 %left OR
 %left AND
-%left LE LT NE EQ GT GE
+%nonassoc LE LT NE EQ GT GE
 %left PLUS MINUS
 %left TIMES DIVIDE
 
@@ -243,7 +240,6 @@
 %precedence CHUNKS
 %precedence TYPE
 %precedence FUNCTION
-%precedence VAR
 %precedence PRIMITIVE
 
 
@@ -363,7 +359,7 @@ chunks:
 | tychunk   chunks        { $$ = $2; $$->push_front($1); }
 | varchunk  chunks        { $$ = $2; $$->push_front($1); }
 | funchunk  chunks        { $$ = $2; $$->push_front($1); }
-| IMPORT    STRING        { $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); }
+| IMPORT   STRING chunks       { $$ = $3; $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); }
 | CHUNKS LPAREN INT RPAREN chunks { $$ = $5; $5->splice_front(*metavar<ast::ChunkList>(tp, $3)); }
   // FIXME: Some code was deleted here (More rules).
 ;
@@ -386,11 +382,11 @@ fundec:
 | PRIMITIVE ID LPAREN notatyfields RPAREN COLON typeid { $$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, nullptr); }
 ;
 
+
 varchunk:
   /* Use `%prec CHUNKS' to do context-dependent precedence and resolve a
      shift-reduce conflict. */
-  vardec %prec CHUNKS  { $$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1); }
-| vardec varchunk       { $$ = $2; $$->push_front(*$1); }
+  vardec  { $$ = tp.td_.make_VarChunk(@1); $$->push_front(*$1); }
 ;
 
 vardec:
@@ -412,7 +408,7 @@ tydec:
 ty:
   typeid               { $$ = $1; }
 | "{" tyfields "}"     { $$ = tp.td_.make_RecordTy(@$, $2); }
-| "array" "of" typeid  { $$ = tp.td_.make_ArrayTy(@$, $3); }
+| "array" OF typeid  { $$ = tp.td_.make_ArrayTy(@$, $3); }
 ;
 
 tyfields:
