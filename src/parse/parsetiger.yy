@@ -355,11 +355,11 @@ chunks:
         end
      which is why we end the recursion with a %empty. */
 
-  %empty                  { $$ = tp.td_.make_ChunkList(@$); }
-| tychunk   chunks        { $$ = $2; $$->push_front($1); }
-| varchunk  chunks        { $$ = $2; $$->push_front($1); }
-| funchunk  chunks        { $$ = $2; $$->push_front($1); }
-| IMPORT   STRING chunks       { $$ = $3; $$->push_front(tp.parse_import($2, @$)->chunks_get().front()); }
+  %empty                      { $$ = tp.td_.make_ChunkList(@$); }
+| tychunk       chunks        { $$ = $2; $$->push_front($1); }
+| varchunk      chunks        { $$ = $2; $$->push_front($1); }
+| funchunk      chunks        { $$ = $2; $$->push_front($1); }
+| IMPORT STRING chunks        { $$ = $3; $$->splice_front(*tp.parse_import($2, @$)); }
 | CHUNKS LPAREN INT RPAREN chunks { $$ = $5; $5->splice_front(*metavar<ast::ChunkList>(tp, $3)); }
   // FIXME: Some code was deleted here (More rules).
 ;
