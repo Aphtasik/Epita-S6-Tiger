@@ -41,7 +41,7 @@ namespace ast
   void PrettyPrinter::operator()(const FieldVar& e)
   {
     // FIXME: Some code was deleted here.
-    ostr_ << e.var_get() << ": " << e.symb_get();
+    ostr_ << e.var_get() << "." << e.symb_get();
   }
 
   /* Foo[10]. */
@@ -131,8 +131,8 @@ namespace ast
     ostr_ << "for ";
     ostr_ << e.vardec_get().name_get();
     ostr_ << " := " << *e.vardec_get().init_get();
-    ostr_ << " to " << e.hi_get() << " do"
-          << misc::incindent << e.body_get() << misc::decindent;
+    ostr_ << " to " << e.hi_get() << " do " << misc::incindent << e.body_get()
+          << misc::decindent;
   }
   void PrettyPrinter::operator()(const IfExp& e)
   {
@@ -145,8 +145,8 @@ namespace ast
   void PrettyPrinter::operator()(const IntExp& e) { ostr_ << e.value_get(); }
   void PrettyPrinter::operator()(const LetExp& e)
   {
-    ostr_ << "let" << misc::incendl << e.chunklist_get() <<  misc::iendl << "in " << e.exp_get() << "end"
-          << misc::decendl;
+    ostr_ << "let" << misc::incendl << e.chunklist_get() << misc::iendl << "in "
+          << e.exp_get() << "end" << misc::iendl;
   }
   void PrettyPrinter::operator()(const NilExp& e) { ostr_ << "nil"; }
   void PrettyPrinter::operator()(const ObjectExp& e) {} //TODO
@@ -191,35 +191,30 @@ namespace ast
 
   void PrettyPrinter::operator()(const RecordExp& e)
   {
-    ostr_ << e.rec_get() << "= {";
+    ostr_ << e.rec_get() << "{";
     ostr_ << misc::separate(e.vec_get(), ", ");
-    /*auto vec = e.vec_get();
-    // printing each field one by one
-    for (size_t i = 0; i < vec.size() - 1; i++)
-      ostr_ << vec.at(i) << ", ";
-    // putting the last item without the coma
-    ostr_ << *(--vec.end())*/
     ostr_ << '}' << misc::iendl;
   }
 
   void PrettyPrinter::operator()(const SeqExp& e)
   {
-    //ostr_ << "oui";
     if (e.exps_get().size() == 0)
       {
         ostr_ << misc::iendl << "()";
         return;
       }
-    //ostr_ << "non";
     ostr_ << misc::incendl;
     ostr_ << misc::separate(e.exps_get(), ";");
     ostr_ << misc::decendl;
   }
 
-  void PrettyPrinter::operator()(const StringExp& e) { ostr_ << e.name_get(); }
+  void PrettyPrinter::operator()(const StringExp& e)
+  {
+    ostr_ << '"' << e.name_get() << '"';
+  }
   void PrettyPrinter::operator()(const WhileExp& e)
   {
-    ostr_ << "while " << e.test_get() << " do" << misc::incendl << e.body_get()
+    ostr_ << "while " << e.test_get() << " do " << misc::incendl << e.body_get()
           << misc::decendl;
   }
 
@@ -254,7 +249,7 @@ namespace ast
   }
   void PrettyPrinter::operator()(const FieldInit& e)
   {
-    ostr_ << e.name_get() << " : " << e.init_get();
+    ostr_ << e.name_get() << " = " << e.init_get();
   }
 
 } // namespace ast
