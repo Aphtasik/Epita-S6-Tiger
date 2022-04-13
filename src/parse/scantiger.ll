@@ -58,6 +58,7 @@ YY_FLEX_NAMESPACE_BEGIN
 int             [0-9]+
 SPACE           [ \t]
 XNUMBER         \\x[0-7][0-9A-F]
+NUMBER          \\[0-3][0-7][0-7]
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
 EOL             (\n\r|\r\n|\n|\r)
 NUM             \\[0-3][0-7][0-7]
@@ -100,7 +101,6 @@ BACKSLASH       \\[^\\abfnrtv]
 
 "\""            {
         dynamic_string.clear();
-        dynamic_string += yytext;
         BEGIN(SC_STRING);
                 }
 <SC_STRING>{
@@ -115,6 +115,10 @@ BACKSLASH       \\[^\\abfnrtv]
         tp.location_.lines(yyleng); tp.location_.step();
                 }
 
+{NUMBER}       {
+        dynamic_string += strtol(yytext + 1, 0, 8);
+                }
+
 {XNUMBER}       {
         dynamic_string += strtol(yytext + 2, 0, 16);
                 }
@@ -126,7 +130,6 @@ BACKSLASH       \\[^\\abfnrtv]
         dynamic_string += yytext;
                 }
 "\""            {
-        dynamic_string += yytext;
         BEGIN(INITIAL);
         return TOKEN_VAL(STRING, dynamic_string);
                 }
@@ -189,10 +192,10 @@ BACKSLASH       \\[^\\abfnrtv]
 "import"    { return TOKEN(IMPORT); }
 "primitive" { return TOKEN(PRIMITIVE); }
 
-"class"     { return TOKEN(CLASS); }
-"extends"   { return TOKEN(EXTENDS); }
-"method"    { return TOKEN(METHOD); }
-"new"       { return TOKEN(NEW); }
+"class"     { CHECK_EXTENSION(); return TOKEN(CLASS); }
+"extends"   { CHECK_EXTENSION(); return TOKEN(EXTENDS); }
+"method"    { CHECK_EXTENSION(); return TOKEN(METHOD); }
+"new"       { CHECK_EXTENSION(); return TOKEN(NEW); }
 
 "_chunks"   { return TOKEN(CHUNKS); }
 "_exp"      { return TOKEN(EXP); }
