@@ -314,8 +314,8 @@ exp:
   | exp LT exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::lt, $3); }
   | exp GE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::ge, $3); }
   | exp LE exp { $$ = tp.td_.make_OpExp(@$, $1, ast::OpExp::Oper::le, $3); }
-  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_OpExp(@$, $3, ast::OpExp::Oper::ne, tp.td_.make_IntExp(@$, 0)), tp.td_.make_IntExp(@$, 0)); }
-  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), tp.td_.make_OpExp(@$, $3, ast::OpExp::Oper::eq, tp.td_.make_IntExp(@$, 1))); }
+  | exp AND exp { $$ = tp.td_.make_IfExp(@$, $1, $3, tp.td_.make_IntExp(@$, 0)); }
+  | exp OR exp { $$ = tp.td_.make_IfExp(@$, $1, tp.td_.make_IntExp(@$, 1), $3); }
 
   | LPAREN exps RPAREN { $$ = $2; }
 
