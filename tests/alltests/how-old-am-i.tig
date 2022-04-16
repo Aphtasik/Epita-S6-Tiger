@@ -1,0 +1,6 @@
+let
+    var val := 42
+in
+    print_int(val);
+    print("\n")
+end

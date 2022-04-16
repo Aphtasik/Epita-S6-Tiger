@@ -119,10 +119,6 @@ namespace ast
   {
     ostr_ << e.name_get() << "(";
     ostr_ << misc::separate(e.exps_get(), ", ");
-    /*auto x = e.exps_get();
-    for (size_t i = 0; i < x.size() - 1; i++)
-      ostr_ << *x.at(i) << ", ";
-    ostr_ << *x.at(x.size() - 1)*/
     ostr_ << ")";
   }
   void PrettyPrinter::operator()(const MethodCallExp& e) {} //TODO
@@ -139,8 +135,7 @@ namespace ast
     ostr_ << "if (" << *e.test_get() << ")" << misc::incendl << "then "
           << *e.thenclause_get() << misc::decendl;
     if (e.elseclause_get())
-      ostr_ << "else (" << *e.elseclause_get() << ")" << misc::decindent;
-    //ostr_ << misc::decindent;
+      ostr_ << "else (" << misc::incendl << *e.elseclause_get() << misc::decendl << ")" << misc::iendl;
   }
   void PrettyPrinter::operator()(const IntExp& e) { ostr_ << e.value_get(); }
   void PrettyPrinter::operator()(const LetExp& e)
@@ -203,9 +198,10 @@ namespace ast
         ostr_ << misc::iendl << "()";
         return;
       }
-    ostr_ << misc::incendl;
-    ostr_ << misc::separate(e.exps_get(), ";");
-    ostr_ << misc::decendl;
+
+    ostr_ << misc::incendl << "(";
+    ostr_ << misc::separate(e.exps_get(), "; ");
+    ostr_ << ")" << misc::decendl;
   }
 
   void PrettyPrinter::operator()(const StringExp& e)
@@ -233,10 +229,6 @@ namespace ast
   {
     ostr_ << "{";
     ostr_ << misc::separate(e.field_get(), ", ");
-    /*auto vec = e.field_get();
-    for (size_t i = 0; i < vec.size() - 1; i++)
-      ostr_ << vec.at(i) << ", ";
-    ostr_ << vec.at(vec.size() - 1)*/
     ostr_ << '}';
   }
   void PrettyPrinter::operator()(const ChunkList& e)

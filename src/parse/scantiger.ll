@@ -61,8 +61,6 @@ XNUMBER         \\x[0-7][0-9A-F]
 NUMBER          \\[0-3][0-7][0-7]
 ID              ([a-zA-Z][a-zA-Z0-9_]*|_main)      
 EOL             (\n\r|\r\n|\n|\r)
-NUM             \\[0-3][0-7][0-7]
-XNUM            \\x[0-7][0-9A-F]
 BACKSLASH       \\[^\\abfnrtv]
 
 /* FIXME: Some code was deleted here. */
@@ -126,9 +124,6 @@ BACKSLASH       \\[^\\abfnrtv]
 "\\\""          {
         dynamic_string += yytext;
                 }
-"\\\\"          {
-        dynamic_string += yytext;
-                }
 "\""            {
         BEGIN(INITIAL);
         return TOKEN_VAL(STRING, dynamic_string);
@@ -144,6 +139,7 @@ BACKSLASH       \\[^\\abfnrtv]
         dynamic_string += yytext;
                 }
 }
+
 
 ","	        { return TOKEN(COMMA); }
 ":"	        { return TOKEN(COLON); }

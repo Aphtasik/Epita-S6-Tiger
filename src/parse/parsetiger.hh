@@ -363,9 +363,12 @@ namespace parse {
       char dummy12[sizeof (ast::Var*)];
 
       // varchunk
+      // notatyfields
+      // notatyfields.1
       char dummy13[sizeof (ast::VarChunk*)];
 
       // vardec
+      // notatyfield
       char dummy14[sizeof (ast::VarDec*)];
 
       // function
@@ -580,7 +583,10 @@ namespace parse {
         S_tyfields = 76,                         // tyfields
         S_77_tyfields_1 = 77,                    // tyfields.1
         S_tyfield = 78,                          // tyfield
-        S_typeid = 79                            // typeid
+        S_notatyfields = 79,                     // notatyfields
+        S_80_notatyfields_1 = 80,                // notatyfields.1
+        S_notatyfield = 81,                      // notatyfield
+        S_typeid = 82                            // typeid
       };
     };
 
@@ -666,10 +672,13 @@ namespace parse {
         break;
 
       case symbol_kind::S_varchunk: // varchunk
+      case symbol_kind::S_notatyfields: // notatyfields
+      case symbol_kind::S_80_notatyfields_1: // notatyfields.1
         value.move< ast::VarChunk* > (std::move (that.value));
         break;
 
       case symbol_kind::S_vardec: // vardec
+      case symbol_kind::S_notatyfield: // notatyfield
         value.move< ast::VarDec* > (std::move (that.value));
         break;
 
@@ -1066,10 +1075,13 @@ namespace parse {
         break;
 
       case symbol_kind::S_varchunk: // varchunk
+      case symbol_kind::S_notatyfields: // notatyfields
+      case symbol_kind::S_80_notatyfields_1: // notatyfields.1
         value.copy< ast::VarChunk* > (that.value);
         break;
 
       case symbol_kind::S_vardec: // vardec
+      case symbol_kind::S_notatyfield: // notatyfield
         value.copy< ast::VarDec* > (that.value);
         break;
 
@@ -1164,10 +1176,13 @@ namespace parse {
         break;
 
       case symbol_kind::S_varchunk: // varchunk
+      case symbol_kind::S_notatyfields: // notatyfields
+      case symbol_kind::S_80_notatyfields_1: // notatyfields.1
         value.move< ast::VarChunk* > (std::move (that.value));
         break;
 
       case symbol_kind::S_vardec: // vardec
+      case symbol_kind::S_notatyfield: // notatyfield
         value.move< ast::VarDec* > (std::move (that.value));
         break;
 
@@ -1218,21 +1233,21 @@ namespace parse {
         switch (yykind)
         {
       case symbol_kind::S_function: // function
-#line 219 "parse/parsetiger.yy"
+#line 220 "parse/parsetiger.yy"
                     { printf("destruct exps"); }
-#line 1224 "parse/parsetiger.hh"
+#line 1239 "parse/parsetiger.hh"
         break;
 
       case symbol_kind::S_60_function_1: // function.1
-#line 219 "parse/parsetiger.yy"
+#line 220 "parse/parsetiger.yy"
                     { printf("destruct exps"); }
-#line 1230 "parse/parsetiger.hh"
+#line 1245 "parse/parsetiger.hh"
         break;
 
       case symbol_kind::S_62_exps_1: // exps.1
-#line 219 "parse/parsetiger.yy"
+#line 220 "parse/parsetiger.yy"
                     { printf("destruct exps"); }
-#line 1236 "parse/parsetiger.hh"
+#line 1251 "parse/parsetiger.hh"
         break;
 
        default:
@@ -1291,10 +1306,13 @@ switch (yykind)
         break;
 
       case symbol_kind::S_varchunk: // varchunk
+      case symbol_kind::S_notatyfields: // notatyfields
+      case symbol_kind::S_80_notatyfields_1: // notatyfields.1
         value.template destroy< ast::VarChunk* > ();
         break;
 
       case symbol_kind::S_vardec: // vardec
+      case symbol_kind::S_notatyfield: // notatyfield
         value.template destroy< ast::VarDec* > ();
         break;
 
@@ -2531,10 +2549,13 @@ switch (yykind)
         break;
 
       case symbol_kind::S_varchunk: // varchunk
+      case symbol_kind::S_notatyfields: // notatyfields
+      case symbol_kind::S_80_notatyfields_1: // notatyfields.1
         value.copy< ast::VarChunk* > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_vardec: // vardec
+      case symbol_kind::S_notatyfield: // notatyfield
         value.copy< ast::VarDec* > (YY_MOVE (that.value));
         break;
 
@@ -2639,10 +2660,13 @@ switch (yykind)
         break;
 
       case symbol_kind::S_varchunk: // varchunk
+      case symbol_kind::S_notatyfields: // notatyfields
+      case symbol_kind::S_80_notatyfields_1: // notatyfields.1
         value.move< ast::VarChunk* > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_vardec: // vardec
+      case symbol_kind::S_notatyfield: // notatyfield
         value.move< ast::VarDec* > (YY_MOVE (s.value));
         break;
 
@@ -2750,7 +2774,7 @@ switch (yykind)
 
 
 } // parse
-#line 2754 "parse/parsetiger.hh"
+#line 2778 "parse/parsetiger.hh"
 
 
 // "%code provides" blocks.
@@ -2762,7 +2786,7 @@ switch (yykind)
     (Prefix parselex)(::parse::TigerParser& tp)
   # define YY_DECL YY_DECL_(yyFlexLexer::)
 
-#line 2766 "parse/parsetiger.hh"
+#line 2790 "parse/parsetiger.hh"
 
 
 #endif // !YY_PARSE_SRC_PARSE_PARSETIGER_HH_INCLUDED
