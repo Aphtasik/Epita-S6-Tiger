@@ -317,7 +317,7 @@ namespace
      299,   300,   301,   303,   305,   307,   308,   309,   310,   311,
      312,   313,   314,   315,   316,   317,   318,   320,   322,   324,
      325,   326,   327,   328,   329,   330,   336,   337,   338,   339,
-     358,   359,   360,   361,   362,   363,   374,   375,   379,   380,
+     357,   358,   359,   360,   361,   362,   373,   374,   379,   380,
      381,   382,   389,   393,   394,   400,   401,   405,   409,   410,
      411,   415,   416,   420,   421,   425,   429,   430,   434,   435,
      439,   444,   447
@@ -3780,49 +3780,49 @@ namespace parse
     break;
 
   case 50: // chunks: %empty
-#line 358 "parse/parsetiger.yy"
+#line 357 "parse/parsetiger.yy"
                               { (*yyvalp).as < ast::ChunkList* > () = tp.td_.make_ChunkList((*yylocp)); }
 #line 3786 "parse/parsetiger.cc"
     break;
 
   case 51: // chunks: tychunk chunks
-#line 359 "parse/parsetiger.yy"
+#line 358 "parse/parsetiger.yy"
                               { (*yyvalp).as < ast::ChunkList* > () = (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::ChunkList* > (); (*yyvalp).as < ast::ChunkList* > ()->push_front((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().value ().as < ast::TypeChunk* > ()); }
 #line 3792 "parse/parsetiger.cc"
     break;
 
   case 52: // chunks: varchunk chunks
-#line 360 "parse/parsetiger.yy"
+#line 359 "parse/parsetiger.yy"
                               { (*yyvalp).as < ast::ChunkList* > () = (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::ChunkList* > (); (*yyvalp).as < ast::ChunkList* > ()->push_front((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().value ().as < ast::VarChunk* > ()); }
 #line 3798 "parse/parsetiger.cc"
     break;
 
   case 53: // chunks: funchunk chunks
-#line 361 "parse/parsetiger.yy"
+#line 360 "parse/parsetiger.yy"
                               { (*yyvalp).as < ast::ChunkList* > () = (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::ChunkList* > (); (*yyvalp).as < ast::ChunkList* > ()->push_front((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().value ().as < ast::FunctionChunk* > ()); }
 #line 3804 "parse/parsetiger.cc"
     break;
 
   case 54: // chunks: "import" "string" chunks
-#line 362 "parse/parsetiger.yy"
+#line 361 "parse/parsetiger.yy"
                               { (*yyvalp).as < ast::ChunkList* > () = (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::ChunkList* > (); (*yyvalp).as < ast::ChunkList* > ()->splice_front(*tp.parse_import((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().value ().as < std::string > (), (*yylocp))); }
 #line 3810 "parse/parsetiger.cc"
     break;
 
   case 55: // chunks: "_chunks" "(" "integer" ")" chunks
-#line 363 "parse/parsetiger.yy"
+#line 362 "parse/parsetiger.yy"
                                   { (*yyvalp).as < ast::ChunkList* > () = (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::ChunkList* > (); (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::ChunkList* > ()->splice_front(*metavar<ast::ChunkList>(tp, (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-2)].getState().value ().as < int > ())); }
 #line 3816 "parse/parsetiger.cc"
     break;
 
   case 56: // funchunk: fundec
-#line 374 "parse/parsetiger.yy"
+#line 373 "parse/parsetiger.yy"
                        { (*yyvalp).as < ast::FunctionChunk* > () = tp.td_.make_FunctionChunk(((static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().yyloc)); (*yyvalp).as < ast::FunctionChunk* > ()->push_front(*(static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::FunctionDec* > ()); }
 #line 3822 "parse/parsetiger.cc"
     break;
 
   case 57: // funchunk: fundec funchunk
-#line 375 "parse/parsetiger.yy"
+#line 374 "parse/parsetiger.yy"
                         { (*yyvalp).as < ast::FunctionChunk* > () = (static_cast<glr_stack_item const *>(yyvsp))[YYFILL (0)].getState().value ().as < ast::FunctionChunk* > (); (*yyvalp).as < ast::FunctionChunk* > ()->push_front(*(static_cast<glr_stack_item const *>(yyvsp))[YYFILL (-1)].getState().value ().as < ast::FunctionDec* > ()); }
 #line 3828 "parse/parsetiger.cc"
     break;

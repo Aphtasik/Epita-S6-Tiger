@@ -354,7 +354,6 @@ chunks:
             ..
         end
      which is why we end the recursion with a %empty. */
-
   %empty                      { $$ = tp.td_.make_ChunkList(@$); }
 | tychunk       chunks        { $$ = $2; $$->push_front($1); }
 | varchunk      chunks        { $$ = $2; $$->push_front($1); }
@@ -376,6 +375,7 @@ funchunk:
 ;
 
 fundec: 
+
   FUNCTION ID LPAREN notatyfields RPAREN COLON typeid EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, $4, $7, $9); }
 | FUNCTION ID LPAREN notatyfields RPAREN EQ exp { $$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, $7); }
 | PRIMITIVE ID LPAREN notatyfields RPAREN { $$ = tp.td_.make_FunctionDec(@$, $2, $4, nullptr, nullptr); }

@@ -37,6 +37,10 @@ namespace ast
     const exps_type& exps_get() const;
     /// Return instructions executed in the loop.
     exps_type& exps_get();
+
+    const FunctionDec* def_get() const;
+    FunctionDec* def_get();
+    void def_set(FunctionDec* def);
     /** \} */
 
     const misc::symbol name_get() const;
@@ -46,6 +50,7 @@ namespace ast
   protected:
     misc::symbol name_;
     exps_type *exps_;
+    FunctionDec* def_ = nullptr;
   };
 } // namespace ast
 #include <ast/call-exp.hxx>

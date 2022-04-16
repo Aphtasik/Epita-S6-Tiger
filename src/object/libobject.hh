@@ -11,4 +11,12 @@
 #include <misc/symbol.hh>
 
 namespace object
-{} // namespace object
+{
+  /*-------.
+  | Bind.  |
+  `-------*/
+
+  // FIXME: Some code was deleted here.
+  misc::error bind(const ast::ChunkList& tree);
+
+} // namespace object

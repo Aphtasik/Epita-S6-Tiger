@@ -102,7 +102,8 @@ namespace ast
       // FIXME: Some code was deleted here. DONE
       e.test_get()->accept(*this);
       e.thenclause_get()->accept(*this);
-      e.elseclause_get()->accept(*this);
+      if(e.elseclause_get())
+        e.elseclause_get()->accept(*this);
   }
 
   template <template <typename> class Const>
